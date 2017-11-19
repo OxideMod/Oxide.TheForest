@@ -652,12 +652,12 @@ namespace Oxide.Game.TheForest
             {
                 /*player.Reply($"Protocol: {Server.Protocol}\nBuild Date: {BuildInfo.Current.BuildDate}\n" +
                 $"Unity Version: {UnityEngine.Application.unityVersion}\nChangeset: {BuildInfo.Current.Scm.ChangeId}\n" +
-                $"Branch: {BuildInfo.Current.Scm.Branch}\nOxide Version: {OxideMod.Version}");*/ // TODO: Implement server version
+                $"Branch: {BuildInfo.Current.Scm.Branch}\nOxide.TheForest Version: {Extension.AssemblyVersion}");*/ // TODO: Implement server version
             }
             else
             {
                 var format = Covalence.FormatText(lang.GetMessage("Version", this, player.Id));
-                player.Reply(string.Format(format, OxideMod.Version, Covalence.GameName, Server.Version, Server.Protocol));
+                player.Reply(string.Format(format, Extension.AssemblyVersion, Covalence.GameName, Server.Version, Server.Protocol));
             }
         }
 
