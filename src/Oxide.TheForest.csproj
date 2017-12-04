@@ -33,36 +33,36 @@
     <PackageReference Include="Oxide.SQLite" Version="2.0.*" />
     <PackageReference Include="Oxide.Unity" Version="2.0.*" />
     <Reference Include="Assembly-CSharp">
-      <HintPath>Dependencies\$(ManagedDir)\Assembly-CSharp.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>Dependencies\$(ManagedDir)\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-UnityScript">
-      <HintPath>Dependencies\$(ManagedDir)\Assembly-UnityScript.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\Assembly-UnityScript.dll</HintPath>
     </Reference>
     <Reference Include="bolt">
-      <HintPath>Dependencies\$(ManagedDir)\bolt.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\bolt.dll</HintPath>
     </Reference>
     <Reference Include="bolt.user">
-      <HintPath>Dependencies\$(ManagedDir)\bolt.user.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\bolt.user.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
-      <HintPath>Dependencies\$(ManagedDir)\mscorlib.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="PlayMaker">
-      <HintPath>Dependencies\$(ManagedDir)\PlayMaker.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\PlayMaker.dll</HintPath>
     </Reference>
     <Reference Include="udpkit">
-      <HintPath>Dependencies\$(ManagedDir)\udpkit.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\udpkit.dll</HintPath>
     </Reference>
     <Reference Include="udpkit.common">
-      <HintPath>Dependencies\$(ManagedDir)\udpkit.common.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\udpkit.common.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>Dependencies\$(ManagedDir)\UnityEngine.dll</HintPath>
+      <HintPath>Dependencies\Patched\$(ManagedDir)\UnityEngine.dll</HintPath>
     </Reference>
-    <None Remove="Bundle\**; Files\**; Patched\**; *.config; *.opj" />
+    <None Remove="Bundle\**; Files\**; Patched\**; **\Original\**; *.config; *.opj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Target Name="Clean">
@@ -77,13 +77,13 @@
   </Target>
   <Target Name="BeforeBuild">
     <!-- Currently only works on Windows due to Windows-only tools used -->
-    <Exec Command="powershell -ExecutionPolicy Bypass $(SolutionDir)\Steam.ps1 -project $(AssemblyName) -dotnet $(TargetFramework) -appid $(SteamAppId) -branch '$(SteamBranch)' -managed '$(ManagedDir)'" />
+    <Exec Command="powershell -ExecutionPolicy Bypass &quot;$(SolutionDir)\Steam.ps1&quot; -project $(AssemblyName) -dotnet $(TargetFramework) -appid $(SteamAppId) -branch '$(SteamBranch)' -managed '$(ManagedDir)'" />
   </Target>
   <Target Name="AfterBuild">
     <ItemGroup>
       <CoreFiles Include="$(TargetDir)\Oxide.*.dll" />
-      <PatchedFiles Include="$(ProjectDir)\Dependencies\$(ManagedDir)\Assembly-CSharp.dll" />
-      <PatchedFiles Include="$(ProjectDir)\Dependencies\$(ManagedDir)\Assembly-UnityScript.dll" />
+      <PatchedFiles Include="$(ProjectDir)\Dependencies\Patched\$(ManagedDir)\Assembly-CSharp.dll" />
+      <PatchedFiles Include="$(ProjectDir)\Dependencies\Patched\$(ManagedDir)\Assembly-UnityScript.dll" />
       <ContentFiles Include="$(ProjectDir)\packages\oxide.csharp\**\lib\any\*.*" />
       <ContentFiles Include="$(SolutionDir)\packages\oxide.references\**\lib\any\*.*" />
       <ContentFiles Include="$(SolutionDir)\packages\oxide.mysql\**\lib\any\*.*; $(SolutionDir)\packages\oxide.mysql\**\lib\$(TargetFramework)\*.*" />
