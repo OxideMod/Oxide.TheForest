@@ -35,7 +35,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
             steamId = entity.source.RemoteEndPoint.SteamId.Id;
             cSteamId = new CSteamID(steamId);
             Id = steamId.ToString();
-            Name = entity.GetState<IPlayerState>().name ?? "Unnamed";
+            Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? "Unnamed";
             this.entity = entity;
         }
 
