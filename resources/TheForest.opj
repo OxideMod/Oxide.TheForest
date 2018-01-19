@@ -832,7 +832,7 @@
                 "SpawnCutTree"
               ]
             },
-            "MSILHash": "ycjisNlIb6mohOQzO/xLOZEVdOZjGd+GhyF2N6kfvtA=",
+            "MSILHash": "ehrsspMN4p/RuxW9fh5tmMW3zig1H58IyK7YlCB7jeo=",
             "BaseHookName": null,
             "HookCategory": "_TESTED"
           }
@@ -1653,7 +1653,7 @@
                 "System.Boolean"
               ]
             },
-            "MSILHash": "GtxbADsqqu7yfuWtXoesMXiwIq+gEJ0eajWZvb5weCk=",
+            "MSILHash": "EdcfyS00lGYHMTqIkXinRkDoDb/siM0TJLWi+e5420s=",
             "BaseHookName": null,
             "HookCategory": "Server"
           }
@@ -1708,7 +1708,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "foP+Yb+lQNaifxhGzeV3Q8yFNM7+PL1Z40eURVnAE30=",
+            "MSILHash": "ZfJV4I1G6tUTa+ZpHLOhxcBoy1OqquB27SgOzqUusro=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }

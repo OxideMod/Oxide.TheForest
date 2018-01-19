@@ -172,7 +172,7 @@ namespace Oxide.Game.TheForest
                 //var gameTime = Scene.Atmosphere.TimeOfDay/*).ToString("h:mm tt")*/;
                 return $"Slot {SteamDSConfig.GameSaveSlot} [{SteamDSConfig.GameDifficulty}]";
             };
-            Interface.Oxide.ServerConsole.Status3Right = () => $"Oxide.TheForest {AssemblyVersion} for {SteamDSConfig.ServerVersion}";
+            Interface.Oxide.ServerConsole.Status3Right = () => $"Oxide.TheForest {AssemblyVersion}";
             Interface.Oxide.ServerConsole.Status3RightColor = ConsoleColor.Yellow;
         }
 
