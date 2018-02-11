@@ -832,7 +832,7 @@
                 "SpawnCutTree"
               ]
             },
-            "MSILHash": "ehrsspMN4p/RuxW9fh5tmMW3zig1H58IyK7YlCB7jeo=",
+            "MSILHash": "nX1rCmZTRLRfhdZXQRzhCYzijQvy0KFB7hZkIl8bMYU=",
             "BaseHookName": null,
             "HookCategory": "_TESTED"
           }
@@ -1170,7 +1170,7 @@
                 "PlayerHitEnemy"
               ]
             },
-            "MSILHash": "upngwoi2IRoq9qlJBzevaA8c88W5r4lxtPN2IpeZe0w=",
+            "MSILHash": "r00ThJ9xYRsacd/z+OWxzy9TTr/QWIh8xhupjibLWpc=",
             "BaseHookName": null,
             "HookCategory": "_TESTED"
           }
@@ -1653,7 +1653,7 @@
                 "System.Boolean"
               ]
             },
-            "MSILHash": "EdcfyS00lGYHMTqIkXinRkDoDb/siM0TJLWi+e5420s=",
+            "MSILHash": "qJmxtUqd493bfy/9p0Zfd0fyLFp3UzLMbasGAl+5pwg=",
             "BaseHookName": null,
             "HookCategory": "Server"
           }
