@@ -4,6 +4,7 @@ cls
 echo Starting server...
 
 TheForestDedicatedServer.exe ^
+-batchmode -nographics ^
 -nosteamclient ^
 -serverip 0.0.0.0 ^
 -servergameport 27015 ^
