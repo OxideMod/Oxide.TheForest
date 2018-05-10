@@ -37,7 +37,7 @@
             "InjectionIndex": 38,
             "ReturnBehavior": 0,
             "ArgumentBehavior": 2,
-            "ArgumentString": null,
+            "ArgumentString": "",
             "HookTypeName": "Simple",
             "Name": "OnPlayerConnected",
             "HookName": "OnPlayerConnected",
@@ -1230,58 +1230,6 @@
           }
         },
         {
-          "Type": "Simple",
-          "Hook": {
-            "InjectionIndex": 0,
-            "ReturnBehavior": 0,
-            "ArgumentBehavior": 2,
-            "ArgumentString": null,
-            "HookTypeName": "Simple",
-            "Name": "IOnPlayerDisconnected [internal]",
-            "HookName": "IOnPlayerDisconnected",
-            "AssemblyName": "Assembly-CSharp.dll",
-            "TypeName": "CoopPlayerCallbacks",
-            "Flagged": false,
-            "Signature": {
-              "Exposure": 2,
-              "Name": "Disconnected",
-              "ReturnType": "System.Void",
-              "Parameters": [
-                "BoltConnection"
-              ]
-            },
-            "MSILHash": "5wl7hGGHjffjojZMRnV0rG0HivLtvrJ+7LffWYc8i4A=",
-            "BaseHookName": null,
-            "HookCategory": "Player"
-          }
-        },
-        {
-          "Type": "Simple",
-          "Hook": {
-            "InjectionIndex": 2,
-            "ReturnBehavior": 1,
-            "ArgumentBehavior": 2,
-            "ArgumentString": null,
-            "HookTypeName": "Simple",
-            "Name": "IOnUserApprove [internal]",
-            "HookName": "IOnUserApprove",
-            "AssemblyName": "Assembly-CSharp.dll",
-            "TypeName": "CoopAckChecker",
-            "Flagged": false,
-            "Signature": {
-              "Exposure": 2,
-              "Name": "Connected",
-              "ReturnType": "System.Void",
-              "Parameters": [
-                "BoltConnection"
-              ]
-            },
-            "MSILHash": "TLzFpcu6f6736aaOrDm652HX4cMBeR6qCPH6KMABLpo=",
-            "BaseHookName": null,
-            "HookCategory": "Player"
-          }
-        },
-        {
           "Type": "Modify",
           "Hook": {
             "InjectionIndex": 0,
@@ -1743,6 +1691,58 @@
             "MSILHash": "qrkoCLAmBlLJ6rix8gcADOxTDOTiFv0tCVA4NJaPYu0=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Simple",
+          "Hook": {
+            "InjectionIndex": 169,
+            "ReturnBehavior": 1,
+            "ArgumentBehavior": 2,
+            "ArgumentString": null,
+            "HookTypeName": "Simple",
+            "Name": "IOnUserApprove [internal]",
+            "HookName": "IOnUserApprove",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopServerCallbacks",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "Connected",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "BoltConnection"
+              ]
+            },
+            "MSILHash": "lxSnlPcblCU9aTbKP0gesr/QVJ6eIt1WG5qT73mMRls=",
+            "BaseHookName": null,
+            "HookCategory": "Player"
+          }
+        },
+        {
+          "Type": "Simple",
+          "Hook": {
+            "InjectionIndex": 17,
+            "ReturnBehavior": 0,
+            "ArgumentBehavior": 2,
+            "ArgumentString": null,
+            "HookTypeName": "Simple",
+            "Name": "IOnPlayerDisconnected [internal]",
+            "HookName": "IOnPlayerDisconnected",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopServerCallbacks",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "Disconnected",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "BoltConnection"
+              ]
+            },
+            "MSILHash": "CN9zLgczxHEDjO6DoDRpOXJpNZtoVwd6XO8ekUNcvvk=",
+            "BaseHookName": null,
+            "HookCategory": "Player"
           }
         }
       ],
