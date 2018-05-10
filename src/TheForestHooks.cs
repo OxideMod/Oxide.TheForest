@@ -22,8 +22,12 @@ namespace Oxide.Game.TheForest
         [HookMethod("IOnUserApprove")]
         private object IOnUserApprove(BoltConnection connection)
         {
-            var id = connection.RemoteEndPoint.SteamId.Id.ToString();
-            var cSteamId = new CSteamID(connection.RemoteEndPoint.SteamId.Id);
+            ulong id = SteamDSConfig.clientConnectionInfo[connection.ConnectionId].m_SteamID;
+            string idString = id.ToString();
+            CSteamID cSteamId = new CSteamID(id);
+
+            // Let covalence know
+            Covalence.PlayerManager.PlayerJoin(id, "Unnamed");
 
             // Get IP address from Steam
             P2PSessionState_t sessionState;
@@ -31,12 +35,10 @@ namespace Oxide.Game.TheForest
             var remoteIp = sessionState.m_nRemoteIP;
             var ip = string.Concat(remoteIp >> 24 & 255, ".", remoteIp >> 16 & 255, ".", remoteIp >> 8 & 255, ".", remoteIp & 255);
 
-            // Let covalence know
-            Covalence.PlayerManager.PlayerJoin(connection.RemoteEndPoint.SteamId.Id, "Unnamed");
 
             // Call out and see if we should reject
-            var canLogin = Interface.Call("CanClientLogin", connection) ?? Interface.Call("CanUserLogin", "Unnamed", id, ip); // TODO: Localization
             if (canLogin is string || (canLogin is bool && !(bool)canLogin))
+            object canLogin = Interface.Call("CanClientLogin", connection) ?? Interface.Call("CanUserLogin", "Unnamed", idString, ip); // TODO: Localization
             {
                 var coopKickToken = new CoopKickToken
                 {
@@ -48,7 +50,7 @@ namespace Oxide.Game.TheForest
             }
 
             // Call game and covalence hooks
-            return Interface.Call("OnUserApprove", connection) ?? Interface.Call("OnUserApproved", "Unnamed", id, ip); // TODO: Localization
+            return Interface.Call("OnUserApprove", connection) ?? Interface.Call("OnUserApproved", "Unnamed", idString, ip); // TODO: Localization
         }
 
         /// <summary>
@@ -61,10 +63,10 @@ namespace Oxide.Game.TheForest
             var entity = Scene.SceneTracker.allPlayerEntities.FirstOrDefault(ent => ent.networkId == evt.Sender);
             if (entity == null) return null;
 
-            var id = entity.source.RemoteEndPoint.SteamId.Id;
             var name = entity.GetState<IPlayerState>().name;
 
             Debug.Log($"[Chat] {name}: {evt.Message}");
+            ulong id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID;
 
             // Call game and covalence hooks
             var iplayer = Covalence.PlayerManager.FindPlayerById(id.ToString());
@@ -78,8 +80,8 @@ namespace Oxide.Game.TheForest
         [HookMethod("OnPlayerConnected")]
         private void OnPlayerConnected(BoltEntity entity)
         {
-            var id = entity.source.RemoteEndPoint.SteamId.Id.ToString();
-            var name = entity.GetState<IPlayerState>().name ?? "Unnamed";
+            string id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString();
+            string name = entity.GetState<IPlayerState>().name?.Sanitize() ?? "Unnamed";
 
             // Update player's permissions group and name
             if (permission.IsLoaded)
@@ -105,11 +107,14 @@ namespace Oxide.Game.TheForest
         [HookMethod("IOnPlayerDisconnected")]
         private void IOnPlayerDisconnected(BoltConnection connection)
         {
-            var id = connection.RemoteEndPoint.SteamId.Id.ToString();
-            var entity = Scene.SceneTracker.allPlayerEntities.FirstOrDefault(ent => ent.source.ConnectionId == connection.ConnectionId);
-            if (entity == null) return;
+            string id = SteamDSConfig.clientConnectionInfo[connection.ConnectionId].m_SteamID.ToString();
+            BoltEntity entity = Scene.SceneTracker.allPlayerEntities.FirstOrDefault(ent => ent.source.ConnectionId == connection.ConnectionId);
+            if (entity == null)
+            {
+                return;
+            }
 
-            var name = entity.GetState<IPlayerState>().name;
+            string name = entity.GetState<IPlayerState>().name ?? "Unnamed";
 
             Debug.Log($"{id}/{name} quit");
 
@@ -117,8 +122,12 @@ namespace Oxide.Game.TheForest
             Interface.Call("OnPlayerDisconnected", entity);
 
             // Let covalence know
-            var iplayer = Covalence.PlayerManager.FindPlayerById(id);
-            if (iplayer != null) Interface.Call("OnUserDisconnected", iplayer, "Unknown"); // TODO: Localization
+            IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
+            if (iplayer != null)
+            {
+                Interface.Call("OnUserDisconnected", iplayer, "Unknown"); // TODO: Localization
+            }
+
             Covalence.PlayerManager.PlayerDisconnected(entity);
         }
 
@@ -129,9 +138,15 @@ namespace Oxide.Game.TheForest
         [HookMethod("OnPlayerSpawn")]
         private void OnPlayerSpawn(BoltEntity entity)
         {
+            string id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString();
+            string name = entity.GetState<IPlayerState>().name ?? "Unnamed";
+
             // Call universal hook
-            var iplayer = Covalence.PlayerManager.FindPlayerById(entity.source.RemoteEndPoint.SteamId.Id.ToString());
-            if (iplayer != null) Interface.Call("OnUserSpawn", iplayer);
+            IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
+            if (iplayer != null)
+            {
+                Interface.Call("OnUserSpawn", iplayer);
+            }
         }
 
         #endregion Player Hooks
