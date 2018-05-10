@@ -32,8 +32,8 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
 
         internal TheForestPlayer(BoltEntity entity)
         {
-            steamId = entity.source.RemoteEndPoint.SteamId.Id;
-            cSteamId = new CSteamID(steamId);
+            cSteamId = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId];
+            steamId = cSteamId.m_SteamID;
             Id = steamId.ToString();
             Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? "Unnamed";
             this.entity = entity;
