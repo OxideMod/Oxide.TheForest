@@ -1,6 +1,7 @@
 ﻿using Bolt;
 using Oxide.Core;
 using Oxide.Core.Libraries.Covalence;
+using Steamworks;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -25,8 +26,8 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// </summary>
         public string Name
         {
-            get { return CoopLobby.Instance.Info.Name ?? SteamDSConfig.ServerName; }
-            set { CoopLobby.Instance.SetName(value); }
+            get => CoopLobby.Instance.Info.Name ?? SteamDSConfig.ServerName;
+            set => CoopLobby.Instance.SetName(value);
         }
 
         private static IPAddress address;
@@ -40,10 +41,13 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
             {
                 try
                 {
-                    if (address != null) return address;
+                    if (address == null)
+                    {
+                        WebClient webClient = new WebClient();
+                        IPAddress.TryParse(webClient.DownloadString("http://api.ipify.org"), out address);
+                        return address;
+                    }
 
-                    var webClient = new WebClient();
-                    IPAddress.TryParse(webClient.DownloadString("http://api.ipify.org"), out address);
                     return address;
                 }
                 catch (Exception ex)
@@ -84,8 +88,8 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// </summary>
         public int MaxPlayers
         {
-            get { return CoopLobby.Instance.Info.MemberLimit; }
-            set { CoopLobby.Instance.SetMemberLimit(value); }
+            get => CoopLobby.Instance.Info.MemberLimit;
+            set => CoopLobby.Instance.SetMemberLimit(value);
         }
 
         /// <summary>
@@ -93,8 +97,8 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// </summary>
         public DateTime Time
         {
-            get { return DateTime.Today.AddMinutes(Scene.Atmosphere.TimeOfDay); } // TODO: Fix this not working
-            set { Scene.Atmosphere.TimeOfDay = value.Minute; } // TODO: Fix this not working
+            get => DateTime.Today.AddMinutes(Scene.Atmosphere.TimeOfDay); // TODO: Fix this not working
+            set => Scene.Atmosphere.TimeOfDay = value.Minute; // TODO: Fix this not working
         }
 
         /// <summary>
@@ -114,10 +118,15 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="duration"></param>
         public void Ban(string id, string reason, TimeSpan duration = default(TimeSpan))
         {
-            if (IsBanned(id)) return;
-
-            Scene.HudGui.MpPlayerList.Ban(Convert.ToUInt64(id));
-            CoopKick.SaveList();
+            if (!IsBanned(id))
+            {
+                ulong steamId;
+                if (ulong.TryParse(id, out steamId))
+                {
+                    Scene.HudGui.MpPlayerList.Ban(steamId);
+                    CoopKick.SaveList();
+                }
+            }
         }
 
         /// <summary>
@@ -126,15 +135,56 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="id"></param>
         public TimeSpan BanTimeRemaining(string id)
         {
-            var kickedPlayer = CoopKick.Instance.KickedPlayers.First(p => p.SteamId == Convert.ToUInt64(id));
-            return kickedPlayer != null ? TimeSpan.FromTicks(kickedPlayer.BanEndTime) : TimeSpan.Zero;
+            ulong steamId;
+            if (ulong.TryParse(id, out steamId))
+            {
+                CoopKick.KickedPlayer kickedPlayer = CoopKick.Instance.KickedPlayers.First(p => p.SteamId == steamId);
+                return kickedPlayer != null ? TimeSpan.FromTicks(kickedPlayer.BanEndTime) : TimeSpan.Zero;
+            }
+
+            return TimeSpan.Zero;
         }
 
         /// <summary>
         /// Gets if the player is banned
         /// </summary>
         /// <param name="id"></param>
-        public bool IsBanned(string id) => CoopKick.IsBanned(new UdpSteamID(Convert.ToUInt64(id)));
+        public bool IsBanned(string id)
+        {
+            ulong steamId;
+            return ulong.TryParse(id, out steamId) && CoopKick.IsBanned(new UdpSteamID(steamId));
+        }
+
+        /// <summary>
+        /// Gets if the player is connected
+        /// </summary>
+        /// <param name="id"></param>
+        public bool IsConnected(string id)
+        {
+            ulong steamId;
+            return ulong.TryParse(id, out steamId) && SteamDSConfig.clientConnectionInfo.Any(c => c.Value == new CSteamID(steamId));
+        }
+
+        /// <summary>
+        /// Kicks the player for the specified reason
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="reason"></param>
+        public void Kick(string id, string reason)
+        {
+            ulong steamId;
+            if (ulong.TryParse(id, out steamId))
+            {
+                uint connectionId = SteamDSConfig.clientConnectionInfo.First(c => c.Value == new CSteamID(steamId)).Key; // TODO: This might error
+                BoltConnection connection = BoltNetwork.connections.First(c => c.ConnectionId == connectionId);
+                CoopKickToken coopKickToken = new CoopKickToken
+                {
+                    KickMessage = reason,
+                    Banned = false
+                };
+                connection.Disconnect(coopKickToken);
+            }
+        }
 
         /// <summary>
         /// Saves the server and any related information
@@ -151,9 +201,14 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="id"></param>
         public void Unban(string id)
         {
-            if (!IsBanned(id)) return;
-
-            CoopKick.UnBanPlayer(ulong.Parse(id));
+            if (IsBanned(id))
+            {
+                ulong steamId;
+                if (ulong.TryParse(id, out steamId))
+                {
+                    CoopKick.UnBanPlayer(steamId);
+                }
+            }
         }
 
         #endregion Administration
@@ -166,10 +221,10 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="message"></param>
         /// <param name="prefix"></param>
         /// <param name="args"></param>
-        public void Broadcast(string message, string prefix, params object[] args) // TODO: Fix NullReferenceException
+        public void Broadcast(string message, string prefix, params object[] args)
         {
-            //CoopServerInfo.Instance.entity.GetState<IPlayerState>().name = prefix ?? "Server";
-            var chatEvent = ChatEvent.Create(GlobalTargets.AllClients);
+            //CoopServerInfo.Instance.entity.GetState<IPlayerState>().name = prefix ?? "Server"; // TODO: Fix NullReferenceException
+            ChatEvent chatEvent = ChatEvent.Create(GlobalTargets.AllClients);
             chatEvent.Message = args.Length > 0 ? string.Format(Formatter.ToUnity(message), args) : Formatter.ToUnity(message);
             chatEvent.Sender = CoopServerInfo.Instance.entity.networkId;
             chatEvent.Send();
@@ -190,7 +245,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="args"></param>
         public void Command(string command, params object[] args)
         {
-            var adminCommand = AdminCommand.Create(GlobalTargets.OnlyServer);
+            AdminCommand adminCommand = AdminCommand.Create(GlobalTargets.OnlyServer);
             adminCommand.Command = command;
             adminCommand.Data = string.Concat(args.Select(o => o.ToString()).ToArray());
             adminCommand.Send();

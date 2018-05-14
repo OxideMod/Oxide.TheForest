@@ -48,11 +48,13 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         public void RegisterCommand(string command, Plugin plugin, CommandCallback callback)
         {
             // Convert to lowercase
-            var commandName = command.ToLowerInvariant();
+            string commandName = command.ToLowerInvariant();
 
             // Check if it already exists
             if (registeredCommands.ContainsKey(commandName))
+            {
                 throw new CommandAlreadyExistsException(commandName);
+            }
 
             registeredCommands.Add(commandName, callback);
         }
