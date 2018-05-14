@@ -1,4 +1,6 @@
 ﻿using Oxide.Core;
+using Oxide.Core.Configuration;
+using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Steamworks;
 using System.Linq;
@@ -10,7 +12,7 @@ namespace Oxide.Game.TheForest
     /// <summary>
     /// Game hooks and wrappers for the core The Forest plugin
     /// </summary>
-    public partial class TheForestCore : CSPlugin
+    public partial class TheForestCore
     {
         #region Player Hooks
 
@@ -22,9 +24,9 @@ namespace Oxide.Game.TheForest
         [HookMethod("IOnUserApprove")]
         private object IOnUserApprove(BoltConnection connection)
         {
-            ulong id = SteamDSConfig.clientConnectionInfo[connection.ConnectionId].m_SteamID;
-            string idString = id.ToString();
-            CSteamID cSteamId = new CSteamID(id);
+            CSteamID cSteamId = SteamDSConfig.clientConnectionInfo[connection.ConnectionId];
+            string idString = cSteamId.ToString();
+            ulong id = cSteamId.m_SteamID;
 
             // Let covalence know
             Covalence.PlayerManager.PlayerJoin(id, "Unnamed");
@@ -32,19 +34,20 @@ namespace Oxide.Game.TheForest
             // Get IP address from Steam
             P2PSessionState_t sessionState;
             SteamGameServerNetworking.GetP2PSessionState(cSteamId, out sessionState);
-            var remoteIp = sessionState.m_nRemoteIP;
-            var ip = string.Concat(remoteIp >> 24 & 255, ".", remoteIp >> 16 & 255, ".", remoteIp >> 8 & 255, ".", remoteIp & 255);
-
+            uint remoteIp = sessionState.m_nRemoteIP;
+            string ip = string.Concat(remoteIp >> 24 & 255, ".", remoteIp >> 16 & 255, ".", remoteIp >> 8 & 255, ".", remoteIp & 255);
 
             // Call out and see if we should reject
-            if (canLogin is string || (canLogin is bool && !(bool)canLogin))
             object canLogin = Interface.Call("CanClientLogin", connection) ?? Interface.Call("CanUserLogin", "Unnamed", idString, ip); // TODO: Localization
+
+            if (canLogin is string || canLogin is bool && !(bool)canLogin)
             {
-                var coopKickToken = new CoopKickToken
+                CoopKickToken coopKickToken = new CoopKickToken
                 {
                     KickMessage = canLogin is string ? canLogin.ToString() : "Connection was rejected", // TODO: Localization
                     Banned = false
                 };
+
                 connection.Disconnect(coopKickToken);
                 return true;
             }
@@ -60,17 +63,60 @@ namespace Oxide.Game.TheForest
         [HookMethod("IOnPlayerChat")]
         private object IOnPlayerChat(ChatEvent evt)
         {
-            var entity = Scene.SceneTracker.allPlayerEntities.FirstOrDefault(ent => ent.networkId == evt.Sender);
-            if (entity == null) return null;
+            BoltEntity entity = Scene.SceneTracker.allPlayerEntities.FirstOrDefault(ent => ent.networkId == evt.Sender);
 
-            var name = entity.GetState<IPlayerState>().name;
+            if (entity == null)
+            {
+                return null;
+            }
 
-            Debug.Log($"[Chat] {name}: {evt.Message}");
+            if (evt.Message.Trim().Length <= 1)
+            {
+                return true;
+            }
+
+            string str = evt.Message.Substring(0, 1);
             ulong id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID;
+            IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id.ToString());
 
-            // Call game and covalence hooks
-            var iplayer = Covalence.PlayerManager.FindPlayerById(id.ToString());
-            return Interface.Call("OnPlayerChat", entity, evt.Message) ?? (iplayer != null ? Interface.Call("OnUserChat", iplayer, evt.Message) : null);
+            // Is it a chat command?
+            if (!str.Equals("/") && !str.Equals("!"))
+            {
+                object chatSpecific = Interface.Call("OnPlayerChat", entity, evt.Message);
+                object chatCovalence = Interface.Call("OnUserChat", iplayer, evt.Message);
+                return chatSpecific ?? chatCovalence;
+            }
+
+            // Is this a covalence command?
+            if (Covalence.CommandSystem.HandleChatMessage(iplayer, evt.Message))
+            {
+                return true;
+            }
+
+            // Get the command string
+            string command = evt.Message.Substring(1);
+
+            string cmd;
+            string[] args;
+
+            // Parse it
+            ParseCommand(command, out cmd, out args);
+            if (cmd == null)
+            {
+                return null;
+            }
+
+            // Handle it
+            /*if (!cmdlib.HandleChatCommand(session, cmd, args))
+            {
+                iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, id.ToString()), cmd));
+                return true;
+            }*/
+
+            // Call the game hook
+            Interface.Call("OnChatCommand", entity, command);
+
+            return true;
         }
 
         /// <summary>
@@ -86,18 +132,31 @@ namespace Oxide.Game.TheForest
             // Update player's permissions group and name
             if (permission.IsLoaded)
             {
+                OxideConfig.DefaultGroups defaultGroups = Interface.Oxide.Config.Options.DefaultGroups;
+
+                if (!permission.UserHasGroup(id, defaultGroups.Players))
+                {
+                    permission.AddUserGroup(id, defaultGroups.Players);
+                }
+
+                if (entity.source.IsDedicatedServerAdmin() && !permission.UserHasGroup(id, defaultGroups.Administrators))
+                {
+                    permission.AddUserGroup(id, defaultGroups.Administrators);
+                }
+
                 permission.UpdateNickname(id, name);
-                var defaultGroups = Interface.Oxide.Config.Options.DefaultGroups;
-                if (!permission.UserHasGroup(id, defaultGroups.Players)) permission.AddUserGroup(id, defaultGroups.Players);
-                if (entity.source.IsDedicatedServerAdmin() && !permission.UserHasGroup(id, defaultGroups.Administrators)) permission.AddUserGroup(id, defaultGroups.Administrators);
             }
 
             Debug.Log($"{id}/{name} joined");
 
             // Let covalence know
             Covalence.PlayerManager.PlayerConnected(entity);
-            var iplayer = Covalence.PlayerManager.FindPlayerById(id);
-            if (iplayer != null) Interface.Call("OnUserConnected", iplayer);
+            IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
+
+            if (iplayer != null)
+            {
+                Interface.Call("OnUserConnected", iplayer);
+            }
         }
 
         /// <summary>
@@ -109,6 +168,7 @@ namespace Oxide.Game.TheForest
         {
             string id = SteamDSConfig.clientConnectionInfo[connection.ConnectionId].m_SteamID.ToString();
             BoltEntity entity = Scene.SceneTracker.allPlayerEntities.FirstOrDefault(ent => ent.source.ConnectionId == connection.ConnectionId);
+
             if (entity == null)
             {
                 return;
@@ -123,6 +183,7 @@ namespace Oxide.Game.TheForest
 
             // Let covalence know
             IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
+
             if (iplayer != null)
             {
                 Interface.Call("OnUserDisconnected", iplayer, "Unknown"); // TODO: Localization
@@ -139,7 +200,6 @@ namespace Oxide.Game.TheForest
         private void OnPlayerSpawn(BoltEntity entity)
         {
             string id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString();
-            string name = entity.GetState<IPlayerState>().name ?? "Unnamed";
 
             // Call universal hook
             IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);

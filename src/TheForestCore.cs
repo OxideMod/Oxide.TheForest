@@ -6,8 +6,7 @@ using Oxide.Game.TheForest.Libraries.Covalence;
 using Steamworks;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using TheForest.Utils;
+using System.Text;
 
 namespace Oxide.Game.TheForest
 {
@@ -74,23 +73,38 @@ namespace Oxide.Game.TheForest
 
             // Add core misc commands
             AddCovalenceCommand(new[] { "oxide.lang", "o.lang" }, "LangCommand");
+            AddCovalenceCommand(new[] { "oxide.save", "o.save" }, "SaveCommand");
             AddCovalenceCommand(new[] { "oxide.version", "o.version" }, "VersionCommand");
 
             // Register messages for localization
-            foreach (var language in Core.Localization.languages) lang.RegisterMessages(language.Value, this, language.Key);
+            foreach (KeyValuePair<string, Dictionary<string, string>> language in Core.Localization.languages)
+            {
+                lang.RegisterMessages(language.Value, this, language.Key);
+            }
 
             // Setup default permission groups
             if (permission.IsLoaded)
             {
-                var rank = 0;
-                foreach (var defaultGroup in Interface.Oxide.Config.Options.DefaultGroups)
-                    if (!permission.GroupExists(defaultGroup)) permission.CreateGroup(defaultGroup, defaultGroup, rank++);
+                int rank = 0;
+
+                foreach (string defaultGroup in Interface.Oxide.Config.Options.DefaultGroups)
+                {
+                    if (!permission.GroupExists(defaultGroup))
+                    {
+                        permission.CreateGroup(defaultGroup, defaultGroup, rank++);
+                    }
+                }
 
                 permission.RegisterValidate(s =>
                 {
                     ulong temp;
-                    if (!ulong.TryParse(s, out temp)) return false;
-                    var digits = temp == 0 ? 1 : (int)Math.Floor(Math.Log10(temp) + 1);
+
+                    if (!ulong.TryParse(s, out temp))
+                    {
+                        return false;
+                    }
+
+                    int digits = temp == 0 ? 1 : (int)Math.Floor(Math.Log10(temp) + 1);
                     return digits >= 17;
                 });
 
@@ -102,66 +116,141 @@ namespace Oxide.Game.TheForest
         private void OnPluginLoaded(Plugin plugin)
         {
             // Call OnServerInitialized for hotloaded plugins
-            if (serverInitialized) plugin.CallHook("OnServerInitialized");
+            if (serverInitialized)
+            {
+                plugin.CallHook("OnServerInitialized");
+            }
         }
 
         [HookMethod("OnServerInitialized")]
         private void OnServerInitialized()
         {
-            if (serverInitialized) return;
+            if (!serverInitialized)
+            {
+                Analytics.Collect();
+                TheForestExtension.ServerConsole();
+                SteamGameServer.SetGameTags("oxide,modded");
 
-            Analytics.Collect();
-            TheForestExtension.ServerConsole();
-            SteamGameServer.SetGameTags("oxide,modded");
-
-            serverInitialized = true;
+                serverInitialized = true;
+            }
         }
 
+        /// <summary>
+        /// Called when the server is saved
+        /// </summary>
+        [HookMethod("OnServerSave")]
+        private void OnServerSave()
+        {
+            Interface.Oxide.OnSave();
+            Covalence.PlayerManager.SavePlayerData();
+        }
+
+        /// <summary>
+        /// Called when the server is shutting down
+        /// </summary>
         [HookMethod("OnServerShutdown")]
-        private void OnServerShutdown() => Interface.Oxide.OnShutdown();
+        private void OnServerShutdown()
+        {
+            Interface.Oxide.OnShutdown();
+            Covalence.PlayerManager.SavePlayerData();
+        }
 
         #endregion Core Hooks
 
         #region Command Handling
 
+        /// <summary>
+        /// Parses the specified chat command
+        /// </summary>
+        /// <param name="argstr"></param>
+        /// <param name="cmd"></param>
+        /// <param name="args"></param>
+        private void ParseCommand(string argstr, out string cmd, out string[] args)
+        {
+            List<string> arglist = new List<string>();
+            StringBuilder sb = new StringBuilder();
+            bool inlongarg = false;
+
+            foreach (char c in argstr)
+            {
+                if (c == '"')
+                {
+                    if (inlongarg)
+                    {
+                        string arg = sb.ToString().Trim();
+
+                        if (!string.IsNullOrEmpty(arg))
+                        {
+                            arglist.Add(arg);
+                        }
+
+                        sb = new StringBuilder();
+                        inlongarg = false;
+                    }
+                    else
+                    {
+                        inlongarg = true;
+                    }
+                }
+                else if (char.IsWhiteSpace(c) && !inlongarg)
+                {
+                    string arg = sb.ToString().Trim();
+
+                    if (!string.IsNullOrEmpty(arg))
+                    {
+                        arglist.Add(arg);
+                    }
+
+                    sb = new StringBuilder();
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            if (sb.Length > 0)
+            {
+                string arg = sb.ToString().Trim();
+
+                if (!string.IsNullOrEmpty(arg))
+                {
+                    arglist.Add(arg);
+                }
+            }
+
+            if (arglist.Count == 0)
+            {
+                cmd = null;
+                args = null;
+                return;
+            }
+
+            cmd = arglist[0];
+            arglist.RemoveAt(0);
+            args = arglist.ToArray();
+        }
+
+        /// <summary>
+        /// Called when a command was run from the server
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         [HookMethod("IOnServerCommand")]
         private object IOnServerCommand(BoltConnection connection, string command, string data)
         {
-            if (command.Length == 0) return null;
+            if (command.Length != 0)
+            {
+                // Get the full command
+                string cmd = command.TrimStart('/');
+                string[] args = string.IsNullOrEmpty(data) ? new string[] { } : data.Split();
 
-            // Get the full command
-            var cmd = command.TrimStart('/');
-            var args = string.IsNullOrEmpty(data) ? new string[] { } : data.Split();
+                return Interface.Call("OnServerCommand", cmd, args) != null;
+            }
 
-            if (Interface.Call("OnServerCommand", cmd, args) != null) return true;
-
-            // Check if command is from the player
-            if (connection == null) return null;
-
-            var id = connection.RemoteEndPoint.SteamId.Id.ToString();
-            var entity = Scene.SceneTracker.allPlayerEntities.FirstOrDefault(ent => ent.source.ConnectionId == connection.ConnectionId);
-            if (entity == null) return null;
-
-            // Get the covalence player
-            var iplayer = Covalence.PlayerManager.FindPlayerById(id);
-            if (iplayer == null) return null;
-
-            // Is the command blocked?
-            var blockedSpecific = Interface.Call("OnPlayerCommand", entity, cmd, args);
-            var blockedCovalence = Interface.Call("OnUserCommand", iplayer, cmd, args);
-            if (blockedSpecific != null || blockedCovalence != null) return true;
-
-            // Is it a chat command?
-            if (command[0] != '/') return null;
-
-            // Is it a covalance command?
-            if (Covalence.CommandSystem.HandleChatMessage(iplayer, command)) return true;
-
-            // Is it a regular chat command?
-            //if (!cmdlib.HandleChatCommand(player, cmd, args)) // TODO: Implement
-            //    iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, iplayer.Id), cmd));
-
-            return true;
+            return null;
         }
 
         #endregion Command Handling
@@ -175,9 +264,13 @@ namespace Oxide.Game.TheForest
         /// <returns></returns>
         private bool PermissionsLoaded(IPlayer player)
         {
-            if (permission.IsLoaded) return true;
-            player.Reply(string.Format(lang.GetMessage("PermissionsNotLoaded", this, player.Id), permission.LastException.Message));
-            return false;
+            if (!permission.IsLoaded)
+            {
+                player.Reply(string.Format(lang.GetMessage("PermissionsNotLoaded", this, player.Id), permission.LastException.Message));
+                return false;
+            }
+
+            return true;
         }
 
         #endregion Helpers
