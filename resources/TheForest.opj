@@ -1450,7 +1450,7 @@
         {
           "Type": "Modify",
           "Hook": {
-            "InjectionIndex": 80,
+            "InjectionIndex": 82,
             "RemoveCount": 20,
             "Instructions": [
               {
@@ -1526,7 +1526,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "qBdL07n78xLlmgFeo0HHZ9yKDfT2nBIMrcSb6HRJVOs=",
+            "MSILHash": "4Nmv6NAYEGNhrmENFcfySpL4NXM8Z6VT6LNPAuwdQm8=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
