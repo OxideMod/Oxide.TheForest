@@ -77,6 +77,7 @@ namespace Oxide.Game.TheForest
         {
             "------- Rewired System Info -------",
             "CoopLobby.LeaveActive instance",
+            "CoopPlayerCallbacks::BoltStartBegin CoopVoice.VoiceChannel",
             "CoopSteamManager Initialize",
             "Game Activation Sequence step",
             "GameServer.InitSafe success:",
@@ -90,6 +91,7 @@ namespace Oxide.Game.TheForest
             "SteamManager - Someone call OnDestroy",
             "SteamManager OnEnable",
             "Trying to reload asset from disk that is not stored on disk",
+            "[<color=#FFF>TIMER</color>]",
             "initializing asset bundle manager with manifest:",
             "setPlanePosition site=",
             "setting asset bundle manifest",
@@ -132,39 +134,56 @@ namespace Oxide.Game.TheForest
             CSharpPluginLoader.PluginReferences.UnionWith(DefaultReferences);
 
             // Setup logging for the game
-            if (!Directory.Exists("logs")) Directory.CreateDirectory("logs");
-            if (File.Exists(logFileName)) File.Delete(logFileName);
-            var logStream = File.AppendText(logFileName);
+            if (!Directory.Exists("logs"))
+            {
+                Directory.CreateDirectory("logs");
+            }
+
+            if (File.Exists(logFileName))
+            {
+                File.Delete(logFileName);
+            }
+
+            StreamWriter logStream = File.AppendText(logFileName);
             logStream.AutoFlush = true;
             logWriter = TextWriter.Synchronized(logStream);
             Application.logMessageReceived += HandleLog;
 
-            if (Interface.Oxide.EnableConsole()) Interface.Oxide.ServerConsole.Input += ServerConsoleOnInput;
+            if (Interface.Oxide.EnableConsole())
+            {
+                Interface.Oxide.ServerConsole.Input += ServerConsoleOnInput;
+            }
         }
 
         internal static void ServerConsole()
         {
-            if (Interface.Oxide.ServerConsole == null) return;
+            if (Interface.Oxide.ServerConsole == null)
+            {
+                return;
+            }
 
             Interface.Oxide.ServerConsole.Title = () => $"{BoltNetwork.connections.Count()} | {SteamDSConfig.ServerName ?? "Unnamed"}";
 
             Interface.Oxide.ServerConsole.Status1Left = () => SteamDSConfig.ServerName ?? "Unnamed";
             Interface.Oxide.ServerConsole.Status1Right = () =>
             {
-                var fps = Mathf.RoundToInt(1f / Time.smoothDeltaTime);
-                var seconds = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
-                var uptime = $"{seconds.TotalHours:00}h{seconds.Minutes:00}m{seconds.Seconds:00}s".TrimStart(' ', 'd', 'h', 'm', 's', '0');
+                int fps = Mathf.RoundToInt(1f / Time.smoothDeltaTime);
+                TimeSpan seconds = TimeSpan.FromSeconds(Time.realtimeSinceStartup);
+                string uptime = $"{seconds.TotalHours:00}h{seconds.Minutes:00}m{seconds.Seconds:00}s".TrimStart(' ', 'd', 'h', 'm', 's', '0');
                 return string.Concat(fps, "fps, ", uptime);
             };
 
             Interface.Oxide.ServerConsole.Status2Left = () => $"{BoltNetwork.clients.Count()}/{SteamDSConfig.ServerPlayers} players";
             Interface.Oxide.ServerConsole.Status2Right = () =>
             {
-                if (Time.realtimeSinceStartup < 0) return "not connected";
+                if (Time.realtimeSinceStartup < 0)
+                {
+                    return "not connected";
+                }
 
                 double bytesReceived = 0;
                 double bytesSent = 0;
-                foreach (var connection in BoltNetwork.clients)
+                foreach (BoltConnection connection in BoltNetwork.clients)
                 {
                     bytesReceived += connection.BitsPerSecondOut / 8f;
                     bytesSent += connection.BitsPerSecondIn / 8f;
@@ -186,10 +205,11 @@ namespace Oxide.Game.TheForest
         private static void ServerConsoleOnInput(string input)
         {
             input = input.Trim();
+
             if (!string.IsNullOrEmpty(input))
             {
-                var inputArray = input.Split();
-                var adminCommand = AdminCommand.Create(GlobalTargets.OnlyServer);
+                string[] inputArray = input.Split();
+                AdminCommand adminCommand = AdminCommand.Create(GlobalTargets.OnlyServer);
                 adminCommand.Command = inputArray[0];
                 adminCommand.Data = string.Concat(inputArray.Skip(1).Select(s => s).ToArray());
                 adminCommand.Send();
@@ -198,13 +218,21 @@ namespace Oxide.Game.TheForest
 
         private void HandleLog(string message, string stackTrace, LogType type)
         {
-            if (string.IsNullOrEmpty(message) || Filter.Any(message.StartsWith)) return;
+            if (string.IsNullOrEmpty(message) || Filter.Any(message.StartsWith))
+            {
+                return;
+            }
 
             logWriter.WriteLine(message); // TODO: Fix access violation
-            if (!string.IsNullOrEmpty(stackTrace)) logWriter.WriteLine(stackTrace);
 
-            var color = ConsoleColor.Gray;
-            var remoteType = "generic";
+            if (!string.IsNullOrEmpty(stackTrace))
+            {
+                logWriter.WriteLine(stackTrace);
+            }
+
+            ConsoleColor color = ConsoleColor.Gray;
+            string remoteType = "generic";
+
             if (type == LogType.Warning)
             {
                 color = ConsoleColor.Yellow;

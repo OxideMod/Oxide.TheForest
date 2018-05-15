@@ -34,10 +34,10 @@
         {
           "Type": "Simple",
           "Hook": {
-            "InjectionIndex": 38,
+            "InjectionIndex": 66,
             "ReturnBehavior": 0,
             "ArgumentBehavior": 2,
-            "ArgumentString": null,
+            "ArgumentString": "",
             "HookTypeName": "Simple",
             "Name": "OnPlayerConnected",
             "HookName": "OnPlayerConnected",
@@ -1230,58 +1230,6 @@
           }
         },
         {
-          "Type": "Simple",
-          "Hook": {
-            "InjectionIndex": 0,
-            "ReturnBehavior": 0,
-            "ArgumentBehavior": 2,
-            "ArgumentString": null,
-            "HookTypeName": "Simple",
-            "Name": "IOnPlayerDisconnected [internal]",
-            "HookName": "IOnPlayerDisconnected",
-            "AssemblyName": "Assembly-CSharp.dll",
-            "TypeName": "CoopPlayerCallbacks",
-            "Flagged": false,
-            "Signature": {
-              "Exposure": 2,
-              "Name": "Disconnected",
-              "ReturnType": "System.Void",
-              "Parameters": [
-                "BoltConnection"
-              ]
-            },
-            "MSILHash": "5wl7hGGHjffjojZMRnV0rG0HivLtvrJ+7LffWYc8i4A=",
-            "BaseHookName": null,
-            "HookCategory": "Player"
-          }
-        },
-        {
-          "Type": "Simple",
-          "Hook": {
-            "InjectionIndex": 2,
-            "ReturnBehavior": 1,
-            "ArgumentBehavior": 2,
-            "ArgumentString": null,
-            "HookTypeName": "Simple",
-            "Name": "IOnUserApprove [internal]",
-            "HookName": "IOnUserApprove",
-            "AssemblyName": "Assembly-CSharp.dll",
-            "TypeName": "CoopAckChecker",
-            "Flagged": false,
-            "Signature": {
-              "Exposure": 2,
-              "Name": "Connected",
-              "ReturnType": "System.Void",
-              "Parameters": [
-                "BoltConnection"
-              ]
-            },
-            "MSILHash": "TLzFpcu6f6736aaOrDm652HX4cMBeR6qCPH6KMABLpo=",
-            "BaseHookName": null,
-            "HookCategory": "Player"
-          }
-        },
-        {
           "Type": "Modify",
           "Hook": {
             "InjectionIndex": 0,
@@ -1502,7 +1450,7 @@
         {
           "Type": "Modify",
           "Hook": {
-            "InjectionIndex": 80,
+            "InjectionIndex": 82,
             "RemoveCount": 20,
             "Instructions": [
               {
@@ -1578,7 +1526,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "qBdL07n78xLlmgFeo0HHZ9yKDfT2nBIMrcSb6HRJVOs=",
+            "MSILHash": "4Nmv6NAYEGNhrmENFcfySpL4NXM8Z6VT6LNPAuwdQm8=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
@@ -1744,6 +1692,112 @@
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
+        },
+        {
+          "Type": "Simple",
+          "Hook": {
+            "InjectionIndex": 169,
+            "ReturnBehavior": 1,
+            "ArgumentBehavior": 2,
+            "ArgumentString": null,
+            "HookTypeName": "Simple",
+            "Name": "IOnUserApprove [internal]",
+            "HookName": "IOnUserApprove",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopServerCallbacks",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "Connected",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "BoltConnection"
+              ]
+            },
+            "MSILHash": "lxSnlPcblCU9aTbKP0gesr/QVJ6eIt1WG5qT73mMRls=",
+            "BaseHookName": null,
+            "HookCategory": "Player"
+          }
+        },
+        {
+          "Type": "Simple",
+          "Hook": {
+            "InjectionIndex": 17,
+            "ReturnBehavior": 0,
+            "ArgumentBehavior": 2,
+            "ArgumentString": null,
+            "HookTypeName": "Simple",
+            "Name": "IOnPlayerDisconnected [internal]",
+            "HookName": "IOnPlayerDisconnected",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopServerCallbacks",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "Disconnected",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "BoltConnection"
+              ]
+            },
+            "MSILHash": "CN9zLgczxHEDjO6DoDRpOXJpNZtoVwd6XO8ekUNcvvk=",
+            "BaseHookName": null,
+            "HookCategory": "Player"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 38,
+            "RemoveCount": 0,
+            "Instructions": [
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "Assembly-CSharp|SteamDSConfig|get_ServerAddress"
+              },
+              {
+                "OpCode": "callvirt",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.String|ToLower"
+              },
+              {
+                "OpCode": "callvirt",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.String|Trim"
+              },
+              {
+                "OpCode": "ldstr",
+                "OpType": "String",
+                "Operand": "0.0.0.0"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.String|op_Inequality"
+              },
+              {
+                "OpCode": "brfalse",
+                "OpType": "Instruction",
+                "Operand": 61
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "LocalhostTestPass [patch]",
+            "HookName": "LocalhostTestPass [patch]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopDedicatedServerStarter",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 0,
+              "Name": "CheckNetworkConfiguration",
+              "ReturnType": "System.Boolean",
+              "Parameters": []
+            },
+            "MSILHash": "HAv0UU61QPJGSP3ftHfEavkLzRq15keQpmgFB3/mddY=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
         }
       ],
       "Modifiers": [
@@ -1784,6 +1838,73 @@
             "Parameters": []
           },
           "MSILHash": ""
+        },
+        {
+          "Name": "CoopAdminCommand::SendLocalMessage",
+          "AssemblyName": "Assembly-CSharp.dll",
+          "TypeName": "CoopAdminCommand",
+          "Type": 1,
+          "TargetExposure": [
+            2,
+            4
+          ],
+          "Flagged": false,
+          "Signature": {
+            "Exposure": [
+              0
+            ],
+            "Name": "SendLocalMessage",
+            "FullTypeName": "System.Void",
+            "Parameters": [
+              "System.String"
+            ]
+          },
+          "MSILHash": "vHU3ahulO/2AFJDy3FGow2Lv8P19c7quPYOBVEz+mgg="
+        },
+        {
+          "Name": "CoopAdminCommand::SendNetworkMessage",
+          "AssemblyName": "Assembly-CSharp.dll",
+          "TypeName": "CoopAdminCommand",
+          "Type": 1,
+          "TargetExposure": [
+            2,
+            4
+          ],
+          "Flagged": false,
+          "Signature": {
+            "Exposure": [
+              0
+            ],
+            "Name": "SendNetworkMessage",
+            "FullTypeName": "System.Void",
+            "Parameters": [
+              "System.String",
+              "BoltConnection"
+            ]
+          },
+          "MSILHash": "QtxCPsddK9mm2JOK4Qw8ng6hiUtefAgdcXLCdMHqN44="
+        },
+        {
+          "Name": "CoopAdminCommand::SendNetworkMessageAll",
+          "AssemblyName": "Assembly-CSharp.dll",
+          "TypeName": "CoopAdminCommand",
+          "Type": 1,
+          "TargetExposure": [
+            2,
+            4
+          ],
+          "Flagged": false,
+          "Signature": {
+            "Exposure": [
+              0
+            ],
+            "Name": "SendNetworkMessageAll",
+            "FullTypeName": "System.Void",
+            "Parameters": [
+              "System.String"
+            ]
+          },
+          "MSILHash": "hYyKaSb9lNkurrVcHYv8IHIP48bzNooKJh26dqzPvtQ="
         }
       ],
       "Fields": []

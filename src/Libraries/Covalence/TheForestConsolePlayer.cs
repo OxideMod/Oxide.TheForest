@@ -204,7 +204,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         public void Message(string message, string prefix, params object[] args)
         {
             message = args.Length > 0 ? string.Format(Formatter.ToPlaintext(message), args) : Formatter.ToPlaintext(message);
-            var formatted = prefix != null ? $"{prefix} {message}" : message;
+            string formatted = prefix != null ? $"{prefix} {message}" : message;
             Interface.Oxide.LogInfo(formatted);
         }
 
@@ -212,7 +212,6 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// Sends the specified message to the player
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="args"></param>
         public void Message(string message) => Message(message, null);
 
         /// <summary>
@@ -227,7 +226,6 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// Replies to the player with the specified message
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="args"></param>
         public void Reply(string message) => Message(message, null);
 
         /// <summary>
@@ -237,7 +235,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="args"></param>
         public void Command(string command, params object[] args)
         {
-            var adminCommand = AdminCommand.Create(GlobalTargets.OnlyServer);
+            AdminCommand adminCommand = AdminCommand.Create(GlobalTargets.OnlyServer);
             adminCommand.Command = command;
             adminCommand.Data = string.Concat(args.Select(o => o.ToString()).ToArray());
             adminCommand.Send();

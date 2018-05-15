@@ -1,8 +1,8 @@
-﻿extern alias Oxide;
+﻿extern alias References;
 
 using Oxide.Core;
 using Oxide.Core.Libraries.Covalence;
-using Oxide::ProtoBuf;
+using References::ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,12 +32,15 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
             allPlayers = new Dictionary<string, TheForestPlayer>();
             connectedPlayers = new Dictionary<string, TheForestPlayer>();
 
-            foreach (var pair in playerData) allPlayers.Add(pair.Key, new TheForestPlayer(pair.Value.Id, pair.Value.Name));
+            foreach (KeyValuePair<string, PlayerRecord> pair in playerData)
+            {
+                allPlayers.Add(pair.Key, new TheForestPlayer(pair.Value.Id, pair.Value.Name));
+            }
         }
 
         internal void PlayerJoin(ulong userId, string name)
         {
-            var id = userId.ToString();
+            string id = userId.ToString();
 
             PlayerRecord record;
             if (playerData.TryGetValue(id, out record))
@@ -53,17 +56,21 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
                 playerData.Add(id, record);
                 allPlayers.Add(id, new TheForestPlayer(userId, name));
             }
-
-            ProtoStorage.Save(playerData, "oxide.covalence");
         }
 
         internal void PlayerConnected(BoltEntity entity)
         {
-            allPlayers[entity.source.RemoteEndPoint.SteamId.Id.ToString()] = new TheForestPlayer(entity);
-            connectedPlayers[entity.source.RemoteEndPoint.SteamId.Id.ToString()] = new TheForestPlayer(entity);
+            string id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString();
+            allPlayers[id] = new TheForestPlayer(entity);
+            connectedPlayers[id] = new TheForestPlayer(entity);
         }
 
-        internal void PlayerDisconnected(BoltEntity entity) => connectedPlayers.Remove(entity.source.RemoteEndPoint.SteamId.Id.ToString());
+        internal void PlayerDisconnected(BoltEntity entity)
+        {
+            connectedPlayers.Remove(SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString());
+        }
+
+        internal void SavePlayerData() => ProtoStorage.Save(playerData, "oxide.covalence");
 
         #region Player Finding
 
@@ -110,7 +117,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <returns></returns>
         public IPlayer FindPlayer(string partialNameOrId)
         {
-            var players = FindPlayers(partialNameOrId).ToArray();
+            IPlayer[] players = FindPlayers(partialNameOrId).ToArray();
             return players.Length == 1 ? players[0] : null;
         }
 
@@ -121,10 +128,12 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <returns></returns>
         public IEnumerable<IPlayer> FindPlayers(string partialNameOrId)
         {
-            foreach (var player in allPlayers.Values)
+            foreach (TheForestPlayer player in allPlayers.Values)
             {
                 if (player.Name != null && player.Name.IndexOf(partialNameOrId, StringComparison.OrdinalIgnoreCase) >= 0 || player.Id == partialNameOrId)
+                {
                     yield return player;
+                }
             }
         }
 

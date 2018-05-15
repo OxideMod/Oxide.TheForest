@@ -19,11 +19,15 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         private static Permission libPerms;
         private readonly BoltEntity entity;
         private readonly CSteamID cSteamId;
+        private readonly PlayerStats stats;
         private readonly ulong steamId;
 
         internal TheForestPlayer(ulong id, string name)
         {
-            if (libPerms == null) libPerms = Interface.Oxide.GetLibrary<Permission>();
+            if (libPerms == null)
+            {
+                libPerms = Interface.Oxide.GetLibrary<Permission>();
+            }
 
             Name = name.Sanitize();
             steamId = id;
@@ -32,10 +36,11 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
 
         internal TheForestPlayer(BoltEntity entity)
         {
-            steamId = entity.source.RemoteEndPoint.SteamId.Id;
-            cSteamId = new CSteamID(steamId);
+            cSteamId = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId];
+            steamId = cSteamId.m_SteamID;
             Id = steamId.ToString();
-            Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? "Unnamed";
+            Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? Name;
+            stats = entity.GetComponentInChildren<PlayerStats>();
             this.entity = entity;
         }
 
@@ -74,7 +79,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
             {
                 P2PSessionState_t sessionState;
                 SteamGameServerNetworking.GetP2PSessionState(cSteamId, out sessionState);
-                var ip = sessionState.m_nRemoteIP;
+                uint ip = sessionState.m_nRemoteIP;
                 return string.Concat(ip >> 24 & 255, ".", ip >> 16 & 255, ".", ip >> 8 & 255, ".", ip & 255);
             }
         }
@@ -92,7 +97,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <summary>
         /// Returns if the player is admin
         /// </summary>
-        public bool IsAdmin => entity.source.IsDedicatedServerAdmin();
+        public bool IsAdmin => entity?.source?.IsDedicatedServerAdmin() ?? false;
 
         /// <summary>
         /// Gets if the player is banned
@@ -125,17 +130,22 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="duration"></param>
         public void Ban(string reason, TimeSpan duration = default(TimeSpan))
         {
-            if (IsBanned) return;
-
-            var kickedPlayer = new CoopKick.KickedPlayer()
+            if (!IsBanned)
             {
-                Name = Name,
-                SteamId = steamId,
-                BanEndTime = (duration.TotalMinutes <= 0 ? 0 : DateTime.UtcNow.ToUnixTimestamp() + (long)duration.TotalMinutes)
-            };
-            CoopKick.Instance.kickedSteamIds.Add(kickedPlayer);
-            CoopKick.SaveList();
-            if (IsConnected) Kick(reason);
+                CoopKick.KickedPlayer kickedPlayer = new CoopKick.KickedPlayer
+                {
+                    Name = Name,
+                    SteamId = steamId,
+                    BanEndTime = duration.TotalMinutes <= 0 ? 0 : DateTime.UtcNow.ToUnixTimestamp() + (long)duration.TotalMinutes
+                };
+                CoopKick.Instance.kickedSteamIds.Add(kickedPlayer);
+                CoopKick.SaveList();
+
+                if (IsConnected)
+                {
+                    Kick(reason);
+                }
+            }
         }
 
         /// <summary>
@@ -145,7 +155,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         {
             get
             {
-                var kickedPlayer = CoopKick.Instance.KickedPlayers.First(k => k.SteamId == steamId);
+                CoopKick.KickedPlayer kickedPlayer = CoopKick.Instance.KickedPlayers.First(k => k.SteamId == steamId);
                 return kickedPlayer != null ? TimeSpan.FromTicks(kickedPlayer.BanEndTime) : TimeSpan.Zero;
             }
         }
@@ -154,22 +164,22 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// Heals the player's character by specified amount
         /// </summary>
         /// <param name="amount"></param>
-        public void Heal(float amount) => entity.GetComponentInChildren<PlayerStats>().Health += amount;
+        public void Heal(float amount) => stats.Health += amount;
 
         /// <summary>
         /// Gets/sets the player's health
         /// </summary>
         public float Health
         {
-            get { return entity.GetComponentInChildren<PlayerStats>().Health; }
-            set { entity.GetComponentInChildren<PlayerStats>().Health = value; }
+            get => stats.Health;
+            set => stats.Health = value;
         }
 
         /// <summary>
         /// Damages the player's character by specified amount
         /// </summary>
         /// <param name="amount"></param>
-        public void Hurt(float amount) => entity.GetComponentInChildren<PlayerStats>().Hit((int)amount, true);
+        public void Hurt(float amount) => stats.Hit((int)amount, true);
 
         /// <summary>
         /// Kicks the player from the game
@@ -177,8 +187,8 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="reason"></param>
         public void Kick(string reason)
         {
-            var connection = entity.source;
-            var coopKickToken = new CoopKickToken()
+            BoltConnection connection = entity.source;
+            CoopKickToken coopKickToken = new CoopKickToken
             {
                 KickMessage = reason,
                 Banned = false
@@ -218,7 +228,10 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
-        public void Teleport(float x, float y, float z) => entity.gameObject.transform.position = new Vector3(x, y, z);
+        public void Teleport(float x, float y, float z)
+        {
+            entity.gameObject.transform.position = new Vector3(x, y, z);
+        }
 
         /// <summary>
         /// Teleports the player's character to the specified generic position
@@ -231,13 +244,14 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// </summary>
         public void Unban()
         {
-            if (!IsBanned) return;
-
-            var kickedPlayer = CoopKick.Instance.kickedSteamIds.First(k => k.SteamId == steamId);
-            if (kickedPlayer != null)
+            if (IsBanned)
             {
-                CoopKick.Instance.kickedSteamIds.Remove(kickedPlayer);
-                CoopKick.SaveList();
+                CoopKick.KickedPlayer kickedPlayer = CoopKick.Instance.kickedSteamIds.First(k => k.SteamId == steamId);
+                if (kickedPlayer != null)
+                {
+                    CoopKick.Instance.kickedSteamIds.Remove(kickedPlayer);
+                    CoopKick.SaveList();
+                }
             }
         }
 
@@ -253,7 +267,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="z"></param>
         public void Position(out float x, out float y, out float z)
         {
-            var pos = entity.gameObject.transform.position;
+            Vector3 pos = entity.gameObject.transform.position;
             x = pos.x;
             y = pos.y;
             z = pos.z;
@@ -265,7 +279,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <returns></returns>
         public GenericPosition Position()
         {
-            var pos = entity.gameObject.transform.position;
+            Vector3 pos = entity.gameObject.transform.position;
             return new GenericPosition(pos.x, pos.y, pos.z);
         }
 
@@ -281,11 +295,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="args"></param>
         public void Message(string message, string prefix, params object[] args)
         {
-            CoopServerInfo.Instance.entity.GetState<IPlayerState>().name = prefix != null ? prefix : "Server";
-            var chatEvent = ChatEvent.Create(entity.source);
-            chatEvent.Message = args.Length > 0 ? string.Format(Formatter.ToUnity(message), args) : Formatter.ToUnity(message);
-            chatEvent.Sender = CoopServerInfo.Instance.entity.networkId;
-            chatEvent.Send();
+            CoopAdminCommand.SendNetworkMessage(args.Length > 0 ? string.Format(Formatter.ToUnity(message), args) : Formatter.ToUnity(message), entity.source);
         }
 
         /// <summary>
@@ -315,7 +325,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="args"></param>
         public void Command(string command, params object[] args)
         {
-            var adminCommand = AdminCommand.Create(entity.source);
+            AdminCommand adminCommand = AdminCommand.Create(entity.source);
             adminCommand.Command = command;
             adminCommand.Data = string.Concat(args.Select(o => o.ToString()).ToArray());
             adminCommand.Send();
