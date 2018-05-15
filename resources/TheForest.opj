@@ -1838,6 +1838,73 @@
             "Parameters": []
           },
           "MSILHash": ""
+        },
+        {
+          "Name": "CoopAdminCommand::SendLocalMessage",
+          "AssemblyName": "Assembly-CSharp.dll",
+          "TypeName": "CoopAdminCommand",
+          "Type": 1,
+          "TargetExposure": [
+            2,
+            4
+          ],
+          "Flagged": false,
+          "Signature": {
+            "Exposure": [
+              0
+            ],
+            "Name": "SendLocalMessage",
+            "FullTypeName": "System.Void",
+            "Parameters": [
+              "System.String"
+            ]
+          },
+          "MSILHash": "vHU3ahulO/2AFJDy3FGow2Lv8P19c7quPYOBVEz+mgg="
+        },
+        {
+          "Name": "CoopAdminCommand::SendNetworkMessage",
+          "AssemblyName": "Assembly-CSharp.dll",
+          "TypeName": "CoopAdminCommand",
+          "Type": 1,
+          "TargetExposure": [
+            2,
+            4
+          ],
+          "Flagged": false,
+          "Signature": {
+            "Exposure": [
+              0
+            ],
+            "Name": "SendNetworkMessage",
+            "FullTypeName": "System.Void",
+            "Parameters": [
+              "System.String",
+              "BoltConnection"
+            ]
+          },
+          "MSILHash": "QtxCPsddK9mm2JOK4Qw8ng6hiUtefAgdcXLCdMHqN44="
+        },
+        {
+          "Name": "CoopAdminCommand::SendNetworkMessageAll",
+          "AssemblyName": "Assembly-CSharp.dll",
+          "TypeName": "CoopAdminCommand",
+          "Type": 1,
+          "TargetExposure": [
+            2,
+            4
+          ],
+          "Flagged": false,
+          "Signature": {
+            "Exposure": [
+              0
+            ],
+            "Name": "SendNetworkMessageAll",
+            "FullTypeName": "System.Void",
+            "Parameters": [
+              "System.String"
+            ]
+          },
+          "MSILHash": "hYyKaSb9lNkurrVcHYv8IHIP48bzNooKJh26dqzPvtQ="
         }
       ],
       "Fields": []
