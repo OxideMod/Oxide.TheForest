@@ -223,12 +223,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="args"></param>
         public void Broadcast(string message, string prefix, params object[] args)
         {
-            //CoopServerInfo.Instance.entity.GetState<IPlayerState>().name = prefix ?? "Server"; // TODO: Fix NullReferenceException
-            ChatEvent chatEvent = ChatEvent.Create(GlobalTargets.AllClients);
-            chatEvent.Message = args.Length > 0 ? string.Format(Formatter.ToUnity(message), args) : Formatter.ToUnity(message);
-            chatEvent.Sender = CoopServerInfo.Instance.entity.networkId;
-            chatEvent.Send();
-
+            CoopAdminCommand.SendNetworkMessageAll(args.Length > 0 ? string.Format(Formatter.ToUnity(message), args) : Formatter.ToUnity(message));
             Debug.Log($"[Chat] {message}");
         }
 
