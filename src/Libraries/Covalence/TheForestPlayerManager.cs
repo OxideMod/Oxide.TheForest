@@ -60,11 +60,15 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
 
         internal void PlayerConnected(BoltEntity entity)
         {
-            allPlayers[entity.source.RemoteEndPoint.SteamId.Id.ToString()] = new TheForestPlayer(entity);
-            connectedPlayers[entity.source.RemoteEndPoint.SteamId.Id.ToString()] = new TheForestPlayer(entity);
+            string id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString();
+            allPlayers[id] = new TheForestPlayer(entity);
+            connectedPlayers[id] = new TheForestPlayer(entity);
         }
 
-        internal void PlayerDisconnected(BoltEntity entity) => connectedPlayers.Remove(entity.source.RemoteEndPoint.SteamId.Id.ToString());
+        internal void PlayerDisconnected(BoltEntity entity)
+        {
+            connectedPlayers.Remove(SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString());
+        }
 
         internal void SavePlayerData() => ProtoStorage.Save(playerData, "oxide.covalence");
 
