@@ -1744,6 +1744,60 @@
             "BaseHookName": null,
             "HookCategory": "Player"
           }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 38,
+            "RemoveCount": 0,
+            "Instructions": [
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "Assembly-CSharp|SteamDSConfig|get_ServerAddress"
+              },
+              {
+                "OpCode": "callvirt",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.String|ToLower"
+              },
+              {
+                "OpCode": "callvirt",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.String|Trim"
+              },
+              {
+                "OpCode": "ldstr",
+                "OpType": "String",
+                "Operand": "0.0.0.0"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.String|op_Inequality"
+              },
+              {
+                "OpCode": "brfalse",
+                "OpType": "Instruction",
+                "Operand": 61
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "LocalhostTestPass [patch]",
+            "HookName": "LocalhostTestPass [patch]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopDedicatedServerStarter",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 0,
+              "Name": "CheckNetworkConfiguration",
+              "ReturnType": "System.Boolean",
+              "Parameters": []
+            },
+            "MSILHash": "HAv0UU61QPJGSP3ftHfEavkLzRq15keQpmgFB3/mddY=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
         }
       ],
       "Modifiers": [
