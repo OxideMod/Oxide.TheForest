@@ -208,6 +208,7 @@ namespace Oxide.Game.TheForest
             if (iplayer != null)
             {
                 Interface.Call("OnUserSpawn", iplayer);
+                iplayer.Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? iplayer.Name;
             }
         }
 
