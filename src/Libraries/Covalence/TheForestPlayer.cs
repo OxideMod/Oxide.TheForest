@@ -97,7 +97,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <summary>
         /// Returns if the player is admin
         /// </summary>
-        public bool IsAdmin => entity.source.IsDedicatedServerAdmin();
+        public bool IsAdmin => entity?.source?.IsDedicatedServerAdmin() ?? false;
 
         /// <summary>
         /// Gets if the player is banned
