@@ -77,6 +77,7 @@ namespace Oxide.Game.TheForest
         {
             "------- Rewired System Info -------",
             "CoopLobby.LeaveActive instance",
+            "CoopPlayerCallbacks::BoltStartBegin CoopVoice.VoiceChannel",
             "CoopSteamManager Initialize",
             "Game Activation Sequence step",
             "GameServer.InitSafe success:",
@@ -90,6 +91,7 @@ namespace Oxide.Game.TheForest
             "SteamManager - Someone call OnDestroy",
             "SteamManager OnEnable",
             "Trying to reload asset from disk that is not stored on disk",
+            "[<color=#FFF>TIMER</color>]",
             "initializing asset bundle manager with manifest:",
             "setPlanePosition site=",
             "setting asset bundle manifest",
