@@ -133,6 +133,9 @@ namespace Oxide.Game.TheForest
             IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
             string name = entity.GetState<IPlayerState>().name?.Sanitize() ?? (iplayer != null ? iplayer.Name : "Unnamed");
 
+            // Set player name if available
+            entity.GetState<IPlayerState>().name = name;
+
             // Update player's permissions group and name
             if (permission.IsLoaded)
             {
