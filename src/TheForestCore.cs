@@ -245,7 +245,7 @@ namespace Oxide.Game.TheForest
             {
                 // Get the full command
                 string cmd = command.TrimStart('/');
-                string[] args = string.IsNullOrEmpty(data) ? new string[] { } : data.Split();
+                string[] args = string.IsNullOrEmpty(data) ? new string[0] : data.Split();
 
                 return Interface.Call("OnServerCommand", cmd, args) != null;
             }
