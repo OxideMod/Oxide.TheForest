@@ -84,7 +84,7 @@ namespace Oxide.Game.TheForest
 
             // Is it a chat command?
             string str = evt.Message.Substring(0, 1);
-            if (!str.Equals("/") && !str.Equals("!"))
+            if (!str.Equals("/"))
             {
                 object chatSpecific = Interface.Call("OnPlayerChat", entity, evt.Message);
                 object chatCovalence = Interface.Call("OnUserChat", iplayer, evt.Message);
@@ -92,10 +92,10 @@ namespace Oxide.Game.TheForest
             }
 
             // Is this a covalence command?
-            if (Covalence.CommandSystem.HandleChatMessage(iplayer, evt.Message))
+            /*if (Covalence.CommandSystem.HandleChatMessage(iplayer, evt.Message))
             {
                 return true;
-            }
+            }*/
 
             // Get the command and parse it
             string cmd;
