@@ -118,9 +118,9 @@ namespace Oxide.Game.TheForest
 
             // TODO: Handle non-Covalence commands
 
-            iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, id.ToString()), cmd));
+            //iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, id.ToString()), cmd));
 
-            return true;
+            return null;
         }
 
         /// <summary>
