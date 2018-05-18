@@ -149,6 +149,7 @@ namespace Oxide.Game.TheForest
             StreamWriter logStream = File.AppendText(logFileName);
             logStream.AutoFlush = true;
             logWriter = TextWriter.Synchronized(logStream);
+
             Application.logMessageReceived += HandleLog;
 
             if (Interface.Oxide.EnableConsole())
@@ -178,19 +179,20 @@ namespace Oxide.Game.TheForest
             Interface.Oxide.ServerConsole.Status2Left = () => $"{BoltNetwork.clients.Count()}/{SteamDSConfig.ServerPlayers} players";
             Interface.Oxide.ServerConsole.Status2Right = () =>
             {
-                if (Time.realtimeSinceStartup < 0)
+                if (Time.realtimeSinceStartup > 0)
                 {
-                    return "not connected";
+                    double bytesReceived = 0;
+                    double bytesSent = 0;
+                    foreach (BoltConnection connection in BoltNetwork.clients)
+                    {
+                        bytesReceived += connection.BitsPerSecondOut / 8f;
+                        bytesSent += connection.BitsPerSecondIn / 8f;
+                    }
+
+                    return $"{Utility.FormatBytes(bytesReceived)}/s in, {Utility.FormatBytes(bytesSent)}/s out";
                 }
 
-                double bytesReceived = 0;
-                double bytesSent = 0;
-                foreach (BoltConnection connection in BoltNetwork.clients)
-                {
-                    bytesReceived += connection.BitsPerSecondOut / 8f;
-                    bytesSent += connection.BitsPerSecondIn / 8f;
-                }
-                return $"{Utility.FormatBytes(bytesReceived)}/s in, {Utility.FormatBytes(bytesSent)}/s out";
+                return "not connected";
             };
 
             Interface.Oxide.ServerConsole.Status3Left = () =>
