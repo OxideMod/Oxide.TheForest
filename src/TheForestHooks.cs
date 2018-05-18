@@ -84,18 +84,27 @@ namespace Oxide.Game.TheForest
 
             // Is it a chat command?
             string str = evt.Message.Substring(0, 1);
-            if (!str.Equals("/"))
+            if (!str.Equals("/") && !str.Equals("!"))
             {
                 object chatSpecific = Interface.Call("OnPlayerChat", entity, evt.Message);
                 object chatCovalence = Interface.Call("OnUserChat", iplayer, evt.Message);
                 return chatSpecific ?? chatCovalence;
             }
 
-            // Is this a covalence command?
-            /*if (Covalence.CommandSystem.HandleChatMessage(iplayer, evt.Message))
+            // Replace ! and / for Covalence handling
+            evt.Message = '/' + evt.Message.Substring(1);
+
+            // Call the game hook
+            if (Interface.Call("OnPlayerCommand", entity, str) != null)
             {
                 return true;
-            }*/
+            }
+
+            // Is this a covalence command?
+            if (Covalence.CommandSystem.HandleChatMessage(iplayer, evt.Message))
+            {
+                return true;
+            }
 
             // Get the command and parse it
             string cmd;
@@ -107,15 +116,9 @@ namespace Oxide.Game.TheForest
                 return null;
             }
 
-            // Handle it
-            /*if (!cmdlib.HandleChatCommand(session, cmd, args))
-            {
-                iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, id.ToString()), cmd));
-                return true;
-            }*/
+            // TODO: Handle non-Covalence commands
 
-            // Call the game hook
-            Interface.Call("OnChatCommand", entity, command);
+            iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, id.ToString()), cmd));
 
             return true;
         }
