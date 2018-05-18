@@ -91,6 +91,15 @@ namespace Oxide.Game.TheForest
                 return chatSpecific ?? chatCovalence;
             }
 
+            // Replace ! and / for Covalence handling
+            evt.Message = '/' + evt.Message.Substring(1);
+
+            // Call the game hook
+            if (Interface.Call("OnPlayerCommand", entity, str) != null)
+            {
+                return true;
+            }
+
             // Is this a covalence command?
             if (Covalence.CommandSystem.HandleChatMessage(iplayer, evt.Message))
             {
@@ -107,17 +116,11 @@ namespace Oxide.Game.TheForest
                 return null;
             }
 
-            // Handle it
-            /*if (!cmdlib.HandleChatCommand(session, cmd, args))
-            {
-                iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, id.ToString()), cmd));
-                return true;
-            }*/
+            // TODO: Handle non-Covalence commands
 
-            // Call the game hook
-            Interface.Call("OnChatCommand", entity, command);
+            //iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, id.ToString()), cmd));
 
-            return true;
+            return null;
         }
 
         /// <summary>
@@ -132,6 +135,9 @@ namespace Oxide.Game.TheForest
             // Check Covalence for player's name
             IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
             string name = entity.GetState<IPlayerState>().name?.Sanitize() ?? (iplayer != null ? iplayer.Name : "Unnamed");
+
+            // Set player name if available
+            entity.GetState<IPlayerState>().name = name;
 
             // Update player's permissions group and name
             if (permission.IsLoaded)

@@ -243,11 +243,23 @@ namespace Oxide.Game.TheForest
         {
             if (command.Length != 0)
             {
-                // Get the full command
-                string cmd = command.TrimStart('/');
-                string[] args = string.IsNullOrEmpty(data) ? new string[] { } : data.Split();
+                string[] args = { data };
 
-                return Interface.Call("OnServerCommand", cmd, args) != null;
+                if (Interface.Call("OnServerCommand", command, args) != null)
+                {
+                    return true;
+                }
+
+                // Is this a covalence command?
+                IPlayer iplayer = new TheForestConsolePlayer();
+                if (Covalence.CommandSystem.HandleConsoleMessage(iplayer, string.Join(" ", new[] { command, data })))
+                {
+                    return true;
+                }
+
+                // TODO: Handle non-Covalence commmands
+
+                iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, iplayer.Id), command));
             }
 
             return null;

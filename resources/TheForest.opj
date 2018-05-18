@@ -34,7 +34,7 @@
         {
           "Type": "Simple",
           "Hook": {
-            "InjectionIndex": 66,
+            "InjectionIndex": 40,
             "ReturnBehavior": 0,
             "ArgumentBehavior": 2,
             "ArgumentString": "",
@@ -1248,7 +1248,7 @@
             ],
             "HookTypeName": "Modify",
             "Name": "DisableCloudSync [patch]",
-            "HookName": "DisableCloudSync",
+            "HookName": "DisableCloudSync [patch]",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "CoopSteamCloud",
             "Flagged": false,
@@ -1340,7 +1340,7 @@
             "Instructions": [],
             "HookTypeName": "Modify",
             "Name": "RemoveShowLogs [patch]",
-            "HookName": "RemoveShowLogs",
+            "HookName": "RemoveShowLogs [patch]",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "CoopDedicatedBootstrap",
             "Flagged": false,
@@ -1369,7 +1369,7 @@
             ],
             "HookTypeName": "Modify",
             "Name": "FixStartupInputNREs [patch]",
-            "HookName": "FixStartupInputNREs",
+            "HookName": "FixStartupInputNREs [patch]",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "TriggerCutScene",
             "Flagged": false,
@@ -1398,7 +1398,7 @@
             ],
             "HookTypeName": "Modify",
             "Name": "ConfigDirInRoot [patch]",
-            "HookName": "ConfigDirInRoot",
+            "HookName": "ConfigDirInRoot [patch]",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "SteamDSConfig",
             "Flagged": false,
@@ -1416,41 +1416,7 @@
         {
           "Type": "Modify",
           "Hook": {
-            "InjectionIndex": 0,
-            "RemoveCount": 23,
-            "Instructions": [
-              {
-                "OpCode": "call",
-                "OpType": "Method",
-                "Operand": "mscorlib|System.Environment|get_CurrentDirectory"
-              },
-              {
-                "OpCode": "ldstr",
-                "OpType": "String",
-                "Operand": "/saves/"
-              }
-            ],
-            "HookTypeName": "Modify",
-            "Name": "SavesDirInRoot [patch]",
-            "HookName": "SavesDirInRoot",
-            "AssemblyName": "Assembly-CSharp.dll",
-            "TypeName": "TheForest.Utils.SaveSlotUtils",
-            "Flagged": false,
-            "Signature": {
-              "Exposure": 2,
-              "Name": "GetUserPath",
-              "ReturnType": "System.String",
-              "Parameters": []
-            },
-            "MSILHash": "fdtFJU6CIptU+g2ZA0MHQceP8uSRCib3g7rg87ejRWM=",
-            "BaseHookName": null,
-            "HookCategory": "_Patches"
-          }
-        },
-        {
-          "Type": "Modify",
-          "Hook": {
-            "InjectionIndex": 82,
+            "InjectionIndex": 90,
             "RemoveCount": 20,
             "Instructions": [
               {
@@ -1516,7 +1482,7 @@
             ],
             "HookTypeName": "Modify",
             "Name": "ConfigFileInRoot [patch]",
-            "HookName": "ConfigFileInRoot",
+            "HookName": "ConfigFileInRoot [patch]",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "SteamDSConfig",
             "Flagged": false,
@@ -1526,7 +1492,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "4Nmv6NAYEGNhrmENFcfySpL4NXM8Z6VT6LNPAuwdQm8=",
+            "MSILHash": "r+O/tVIMWbdaK3VpynJR0kK806Kwqh5WMlBOe0lu4Bg=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
@@ -1597,7 +1563,7 @@
             ],
             "HookTypeName": "Modify",
             "Name": "FixStartupMappingNREs [patch]",
-            "HookName": "FixStartupMappingNREs",
+            "HookName": "FixStartupMappingNREs [patch]",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "TheForest.UI.InputMappingIcons",
             "Flagged": false,
@@ -1678,7 +1644,7 @@
             ],
             "HookTypeName": "Modify",
             "Name": "FixUICameraNREs [patch]",
-            "HookName": "FixUICameraNREs",
+            "HookName": "FixUICameraNREs [patch]",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "UICamera",
             "Flagged": false,
@@ -1795,6 +1761,144 @@
               "Parameters": []
             },
             "MSILHash": "HAv0UU61QPJGSP3ftHfEavkLzRq15keQpmgFB3/mddY=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 58,
+            "RemoveCount": 2,
+            "Instructions": [
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.Environment|get_CurrentDirectory"
+              },
+              {
+                "OpCode": "ldstr",
+                "OpType": "String",
+                "Operand": "/saves/"
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "SavesInRootDefault [patch]",
+            "HookName": "SavesInRootDefault [patch]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "SteamDSConfig",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 0,
+              "Name": ".cctor",
+              "ReturnType": "System.Void",
+              "Parameters": []
+            },
+            "MSILHash": "r+O/tVIMWbdaK3VpynJR0kK806Kwqh5WMlBOe0lu4Bg=",
+            "BaseHookName": "ConfigFileInRoot [patch]",
+            "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 2,
+            "RemoveCount": 1,
+            "Instructions": [
+              {
+                "OpCode": "brfalse",
+                "OpType": "Instruction",
+                "Operand": 3
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.Environment|get_CurrentDirectory"
+              },
+              {
+                "OpCode": "ldstr",
+                "OpType": "String",
+                "Operand": "/saves/"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.String|Concat(System.String,System.String)"
+              },
+              {
+                "OpCode": "ret",
+                "OpType": "None",
+                "Operand": null
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "SavesInRoot [patch 1]",
+            "HookName": "SavesInRoot [patch 1]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "TheForest.Utils.SaveSlotUtils",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "GetUserPath",
+              "ReturnType": "System.String",
+              "Parameters": []
+            },
+            "MSILHash": "+EQym5jingsDB+wAS5MVT4aH6JC0thXzdpDjb/+w/BM=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 8,
+            "RemoveCount": 4,
+            "Instructions": [],
+            "HookTypeName": "Modify",
+            "Name": "SavesInRoot [patch 2]",
+            "HookName": "SavesInRoot [patch 2]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "TheForest.Utils.SaveSlotUtils",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "GetUserPath",
+              "ReturnType": "System.String",
+              "Parameters": []
+            },
+            "MSILHash": "+EQym5jingsDB+wAS5MVT4aH6JC0thXzdpDjb/+w/BM=",
+            "BaseHookName": "SavesInRoot [patch 1]",
+            "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 8,
+            "RemoveCount": 2,
+            "Instructions": [
+              {
+                "OpCode": "ldstr",
+                "OpType": "String",
+                "Operand": ""
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "NoModeInSavePath [patch]",
+            "HookName": "NoModeInSavePath [patch]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "TheForest.Utils.SaveSlotUtils",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "GetLocalSlotPath",
+              "ReturnType": "System.String",
+              "Parameters": [
+                "TheForest.Commons.Enums.PlayerModes",
+                "TheForest.Commons.Enums.Slots"
+              ]
+            },
+            "MSILHash": "BoAwtuGMksM9PMMn54npb/D2AyS6cQhI/0B7zZiGujI=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }

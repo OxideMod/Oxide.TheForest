@@ -15,7 +15,7 @@ TheForestDedicatedServer.exe ^
 -serverautosaveinterval 15 ^
 -serverpassword "" ^
 -serverpassword_admin "" ^
--enableVAC ^
+-enablevac on ^
 -difficulty Normal ^
 -inittype Continue ^
 -slot 1
