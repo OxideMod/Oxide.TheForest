@@ -44,6 +44,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// Registers the specified command
         /// </summary>
         /// <param name="command"></param>
+        /// <param name="plugin"></param>
         /// <param name="callback"></param>
         public void RegisterCommand(string command, Plugin plugin, CommandCallback callback)
         {
@@ -63,6 +64,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// Unregisters the specified command
         /// </summary>
         /// <param name="command"></param>
+        /// <param name="plugin"></param>
         public void UnregisterCommand(string command, Plugin plugin) => registeredCommands.Remove(command);
 
         /// <summary>
@@ -72,6 +74,14 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="message"></param>
         /// <returns></returns>
         public bool HandleChatMessage(IPlayer player, string message) => commandHandler.HandleChatMessage(player, message);
+
+        /// <summary>
+        /// Handles a console message
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool HandleConsoleMessage(IPlayer player, string message) => commandHandler.HandleConsoleMessage(player, message);
 
         #endregion Command Registration
     }
