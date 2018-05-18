@@ -88,7 +88,14 @@ namespace Oxide.Game.TheForest
             {
                 object chatSpecific = Interface.Call("OnPlayerChat", entity, evt.Message);
                 object chatCovalence = Interface.Call("OnUserChat", iplayer, evt.Message);
-                return chatSpecific ?? chatCovalence;
+
+                if (chatSpecific != null || chatCovalence != null)
+                {
+                    return true;
+                }
+
+                Debug.Log($"[Chat] {iplayer.Name}: {evt.Message}");
+                return null;
             }
 
             // Replace ! and / for Covalence handling
