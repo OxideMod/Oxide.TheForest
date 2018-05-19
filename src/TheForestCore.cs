@@ -2,7 +2,6 @@
 using Oxide.Core.Libraries;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
-using Oxide.Game.TheForest.Libraries.Covalence;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -35,7 +34,7 @@ namespace Oxide.Game.TheForest
         //internal readonly Player Player = Interface.Oxide.GetLibrary<Player>();
 
         // Instances
-        internal static readonly TheForestCovalenceProvider Covalence = TheForestCovalenceProvider.Instance;
+        internal static readonly TheForestProvider Covalence = TheForestProvider.Instance;
         internal readonly PluginManager pluginManager = Interface.Oxide.RootPluginManager;
         internal readonly IServer Server = Covalence.CreateServer();
 

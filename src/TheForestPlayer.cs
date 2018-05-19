@@ -9,7 +9,7 @@ using TheForest.Utils;
 using UdpKit;
 using UnityEngine;
 
-namespace Oxide.Game.TheForest.Libraries.Covalence
+namespace Oxide.Game.TheForest
 {
     /// <summary>
     /// Represents a player, either connected or not
@@ -17,6 +17,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
     public class TheForestPlayer : IPlayer, IEquatable<IPlayer>
     {
         private static Permission libPerms;
+
         private readonly BoltEntity entity;
         private readonly CSteamID cSteamId;
         private readonly PlayerStats stats;
@@ -29,7 +30,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
                 libPerms = Interface.Oxide.GetLibrary<Permission>();
             }
 
-            Name = name.Sanitize();
+            Name = name?.Sanitize() ?? "Unnamed";
             steamId = id;
             Id = id.ToString();
         }
@@ -295,7 +296,15 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="args"></param>
         public void Message(string message, string prefix, params object[] args)
         {
-            CoopAdminCommand.SendNetworkMessage(args.Length > 0 ? string.Format(Formatter.ToUnity(message), args) : Formatter.ToUnity(message), entity.source);
+            // Format the message
+            message = args.Length > 0 ? string.Format(Formatter.ToUnity(message), args) : Formatter.ToUnity(message);
+            string formatted = prefix != null ? $"{prefix}: {message}" : message;
+
+            // Create and send the message
+            ChatEvent chatEvent = ChatEvent.Create(entity.source);
+            chatEvent.Message = formatted;
+            chatEvent.Sender = entity.networkId;
+            chatEvent.Send();
         }
 
         /// <summary>

@@ -5,7 +5,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 
-namespace Oxide.Game.TheForest.Libraries.Covalence
+namespace Oxide.Game.TheForest
 {
     /// <summary>
     /// The player object that represents the server console

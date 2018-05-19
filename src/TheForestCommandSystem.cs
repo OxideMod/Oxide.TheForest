@@ -2,7 +2,7 @@
 using Oxide.Core.Plugins;
 using System.Collections.Generic;
 
-namespace Oxide.Game.TheForest.Libraries.Covalence
+namespace Oxide.Game.TheForest
 {
     /// <summary>
     /// Represents a binding to a generic command system

@@ -1,11 +1,11 @@
 ﻿using Oxide.Core.Libraries.Covalence;
 
-namespace Oxide.Game.TheForest.Libraries.Covalence
+namespace Oxide.Game.TheForest
 {
     /// <summary>
     /// Provides Covalence functionality for the game "The Forest"
     /// </summary>
-    public class TheForestCovalenceProvider : ICovalenceProvider
+    public class TheForestProvider : ICovalenceProvider
     {
         /// <summary>
         /// Gets the name of the game for which this provider provides
@@ -25,9 +25,9 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <summary>
         /// Gets the singleton instance of this provider
         /// </summary>
-        internal static TheForestCovalenceProvider Instance { get; private set; }
+        internal static TheForestProvider Instance { get; private set; }
 
-        public TheForestCovalenceProvider()
+        public TheForestProvider()
         {
             Instance = this;
         }

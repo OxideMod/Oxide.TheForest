@@ -86,6 +86,7 @@
       <CoreFiles Include="$(TargetDir)\Oxide.*.dll" />
       <PatchedFiles Include="$(ProjectDir)\Dependencies\Patched\$(ManagedDir)\Assembly-CSharp.dll" />
       <PatchedFiles Include="$(ProjectDir)\Dependencies\Patched\$(ManagedDir)\Assembly-UnityScript.dll" />
+      <PatchedFiles Include="$(ProjectDir)\Dependencies\Patched\$(ManagedDir)\bolt.dll" />
       <ContentFiles Include="$(ProjectDir)\packages\oxide.csharp\**\lib\any\*.*" />
       <ContentFiles Include="$(SolutionDir)\packages\oxide.references\**\lib\any\*.*" />
       <ContentFiles Include="$(SolutionDir)\packages\oxide.mysql\**\lib\any\*.*; $(SolutionDir)\packages\oxide.mysql\**\lib\$(TargetFramework)\*.*" />

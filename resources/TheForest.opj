@@ -1870,38 +1870,6 @@
             "BaseHookName": "SavesInRoot [patch 1]",
             "HookCategory": "_Patches"
           }
-        },
-        {
-          "Type": "Modify",
-          "Hook": {
-            "InjectionIndex": 8,
-            "RemoveCount": 2,
-            "Instructions": [
-              {
-                "OpCode": "ldstr",
-                "OpType": "String",
-                "Operand": ""
-              }
-            ],
-            "HookTypeName": "Modify",
-            "Name": "NoModeInSavePath [patch]",
-            "HookName": "NoModeInSavePath [patch]",
-            "AssemblyName": "Assembly-CSharp.dll",
-            "TypeName": "TheForest.Utils.SaveSlotUtils",
-            "Flagged": false,
-            "Signature": {
-              "Exposure": 2,
-              "Name": "GetLocalSlotPath",
-              "ReturnType": "System.String",
-              "Parameters": [
-                "TheForest.Commons.Enums.PlayerModes",
-                "TheForest.Commons.Enums.Slots"
-              ]
-            },
-            "MSILHash": "BoAwtuGMksM9PMMn54npb/D2AyS6cQhI/0B7zZiGujI=",
-            "BaseHookName": null,
-            "HookCategory": "_Patches"
-          }
         }
       ],
       "Modifiers": [
@@ -2165,6 +2133,20 @@
       ],
       "Modifiers": [],
       "Fields": []
+    },
+    {
+      "AssemblyName": "bolt.dll",
+      "Hooks": [],
+      "Modifiers": [],
+      "Fields": [
+        {
+          "Name": "IPlayer",
+          "AssemblyName": "bolt.dll",
+          "TypeName": "BoltEntity",
+          "FieldType": "Oxide.Core|Oxide.Core.Libraries.Covalence.IPlayer",
+          "Flagged": false
+        }
+      ]
     }
   ]
 }
