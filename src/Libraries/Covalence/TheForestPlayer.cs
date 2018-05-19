@@ -29,7 +29,7 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
                 libPerms = Interface.Oxide.GetLibrary<Permission>();
             }
 
-            Name = name.Sanitize();
+            Name = name?.Sanitize() ?? "Unnamed";
             steamId = id;
             Id = id.ToString();
         }
