@@ -8,17 +8,14 @@ using System.Linq;
 using System.Net;
 using TheForest.Utils;
 using UdpKit;
-using UnityEngine;
 
-namespace Oxide.Game.TheForest.Libraries.Covalence
+namespace Oxide.Game.TheForest
 {
     /// <summary>
     /// Represents the server hosting the game instance
     /// </summary>
     public class TheForestServer : IServer
     {
-        internal NetworkId NetworkId = new NetworkId();
-
         #region Information
 
         /// <summary>
@@ -223,8 +220,23 @@ namespace Oxide.Game.TheForest.Libraries.Covalence
         /// <param name="args"></param>
         public void Broadcast(string message, string prefix, params object[] args)
         {
-            CoopAdminCommand.SendNetworkMessageAll(args.Length > 0 ? string.Format(Formatter.ToUnity(message), args) : Formatter.ToUnity(message));
-            Debug.Log($"[Chat] {message}");
+            // Format the message
+            message = args.Length > 0 ? string.Format(Formatter.ToUnity(message), args) : Formatter.ToUnity(message);
+            string formatted = prefix != null ? $"{prefix}: {message}" : message;
+
+            foreach (BoltEntity entity in BoltNetwork.entities)
+            {
+                if (entity != null && entity.StateIs<IPlayerState>())
+                {
+                    // Create and send the message
+                    ChatEvent chatEvent = ChatEvent.Create(entity.source);
+                    chatEvent.Message = formatted;
+                    chatEvent.Sender = entity.networkId;
+                    chatEvent.Send();
+                }
+            }
+
+            Interface.Oxide.LogInfo($"[Broadcast] {message}");
         }
 
         /// <summary>
