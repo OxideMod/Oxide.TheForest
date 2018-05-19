@@ -2133,6 +2133,20 @@
       ],
       "Modifiers": [],
       "Fields": []
+    },
+    {
+      "AssemblyName": "bolt.dll",
+      "Hooks": [],
+      "Modifiers": [],
+      "Fields": [
+        {
+          "Name": "IPlayer",
+          "AssemblyName": "bolt.dll",
+          "TypeName": "BoltEntity",
+          "FieldType": "Oxide.Core|Oxide.Core.Libraries.Covalence.IPlayer",
+          "Flagged": false
+        }
+      ]
     }
   ]
 }
