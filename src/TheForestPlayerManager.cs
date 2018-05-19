@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Oxide.Game.TheForest.Libraries.Covalence
+namespace Oxide.Game.TheForest
 {
     /// <summary>
     /// Represents a generic player manager
