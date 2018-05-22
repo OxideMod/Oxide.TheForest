@@ -335,7 +335,7 @@ namespace Oxide.Game.TheForest
         {
             AdminCommand adminCommand = AdminCommand.Create(entity.source);
             adminCommand.Command = command;
-            adminCommand.Data = string.Concat(args.Select(o => o.ToString()).ToArray());
+            adminCommand.Data = string.Join(" ", Array.ConvertAll(args, x => x.ToString()));
             adminCommand.Send();
         }
 
