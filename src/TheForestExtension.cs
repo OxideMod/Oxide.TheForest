@@ -215,7 +215,7 @@ namespace Oxide.Game.TheForest
                 string[] inputArray = input.Split();
                 AdminCommand adminCommand = AdminCommand.Create(GlobalTargets.OnlyServer);
                 adminCommand.Command = inputArray[0];
-                adminCommand.Data = string.Concat(inputArray.Skip(1).Select(s => s).ToArray());
+                adminCommand.Data = string.Join(" ", inputArray.Skip(1).ToArray());
                 adminCommand.Send();
             }
         }
