@@ -2,7 +2,6 @@
 using Oxide.Core.Libraries;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
-using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -114,9 +113,9 @@ namespace Oxide.Game.TheForest
         [HookMethod("OnPluginLoaded")]
         private void OnPluginLoaded(Plugin plugin)
         {
-            // Call OnServerInitialized for hotloaded plugins
             if (serverInitialized)
             {
+                // Call OnServerInitialized for hotloaded plugins
                 plugin.CallHook("OnServerInitialized");
             }
         }
@@ -127,8 +126,9 @@ namespace Oxide.Game.TheForest
             if (!serverInitialized)
             {
                 Analytics.Collect();
+
+                // Show the server console, if enabled
                 TheForestExtension.ServerConsole();
-                SteamGameServer.SetGameTags("oxide,modded");
 
                 serverInitialized = true;
             }
@@ -140,7 +140,10 @@ namespace Oxide.Game.TheForest
         [HookMethod("OnServerSave")]
         private void OnServerSave()
         {
+            // Trigger save process
             Interface.Oxide.OnSave();
+
+            // Save Oxide groups, users, and other data
             Covalence.PlayerManager.SavePlayerData();
         }
 
@@ -150,7 +153,10 @@ namespace Oxide.Game.TheForest
         [HookMethod("OnServerShutdown")]
         private void OnServerShutdown()
         {
+            // Trigger shutdown process
             Interface.Oxide.OnShutdown();
+
+            // Save Oxide groups, users, and other data
             Covalence.PlayerManager.SavePlayerData();
         }
 
@@ -228,40 +234,6 @@ namespace Oxide.Game.TheForest
             cmd = arglist[0];
             arglist.RemoveAt(0);
             args = arglist.ToArray();
-        }
-
-        /// <summary>
-        /// Called when a command was run from the server
-        /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="command"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        [HookMethod("IOnServerCommand")]
-        private object IOnServerCommand(BoltConnection connection, string command, string data)
-        {
-            if (command.Length != 0)
-            {
-                string[] args = { data };
-
-                if (Interface.Call("OnServerCommand", command, args) != null)
-                {
-                    return true;
-                }
-
-                // Is this a covalence command?
-                IPlayer iplayer = new TheForestConsolePlayer();
-                if (Covalence.CommandSystem.HandleConsoleMessage(iplayer, string.Join(" ", new[] { command, data })))
-                {
-                    return true;
-                }
-
-                // TODO: Handle non-Covalence commmands
-
-                iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, iplayer.Id), command));
-            }
-
-            return null;
         }
 
         #endregion Command Handling
