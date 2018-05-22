@@ -92,6 +92,9 @@ namespace Oxide.Game.TheForest
             // Handle universal player connecting
             Covalence.PlayerManager.PlayerConnected(entity);
 
+            // Get updated IPlayer after entity is set
+            iplayer = Covalence.PlayerManager.FindPlayerById(id);
+
             if (iplayer != null)
             {
                 // Set IPlayer for BoltEntity

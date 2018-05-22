@@ -40,7 +40,6 @@ namespace Oxide.Game.TheForest
             cSteamId = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId];
             steamId = cSteamId.m_SteamID;
             Id = steamId.ToString();
-            Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? "Unnamed";
             stats = entity.GetComponentInChildren<PlayerStats>();
             this.entity = entity;
         }
