@@ -1870,6 +1870,40 @@
             "BaseHookName": "SavesInRoot [patch 1]",
             "HookCategory": "_Patches"
           }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 13,
+            "RemoveCount": 1,
+            "Instructions": [
+              {
+                "OpCode": "ldstr",
+                "OpType": "String",
+                "Operand": ";modded;oxide"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "mscorlib|System.String|Concat(System.String,System.String,System.String)"
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "AddGameTags [patch]",
+            "HookName": "AddGameTags [patch]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopSteamManagerDS",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 0,
+              "Name": "SendUpdatedServerDetailsToSteam",
+              "ReturnType": "System.Void",
+              "Parameters": []
+            },
+            "MSILHash": "XGb2RPeQdJVzgSLn3258fO013bPUdWoEW23/a3MWWU4=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
         }
       ],
       "Modifiers": [

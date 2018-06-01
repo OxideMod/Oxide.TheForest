@@ -92,6 +92,9 @@ namespace Oxide.Game.TheForest
             // Handle universal player connecting
             Covalence.PlayerManager.PlayerConnected(entity);
 
+            // Get updated IPlayer after entity is set
+            iplayer = Covalence.PlayerManager.FindPlayerById(id);
+
             if (iplayer != null)
             {
                 // Set IPlayer for BoltEntity
@@ -168,9 +171,18 @@ namespace Oxide.Game.TheForest
             // Replace ! with / for Covalence handling
             evt.Message = '/' + evt.Message.Substring(1);
 
+            // Get the command and parse it
+            string cmd;
+            string[] args;
+            ParseCommand(evt.Message.Substring(1), out cmd, out args);
+            if (cmd == null)
+            {
+                return null;
+            }
+
             // Call the hooks for plugins
-            object commandUniversal = Interface.Call("OnUserCommand", iplayer, str);
-            object commandSpecific = Interface.Call("OnPlayerCommand", entity, str);
+            object commandUniversal = Interface.Call("OnUserCommand", iplayer, cmd, args);
+            object commandSpecific = Interface.Call("OnPlayerCommand", entity, cmd, args);
             if (commandUniversal != null || commandSpecific != null)
             {
                 return true;
@@ -182,20 +194,10 @@ namespace Oxide.Game.TheForest
                 return true;
             }
 
-            // Get the command and parse it
-            string cmd;
-            string[] args;
-            string command = evt.Message.Substring(1);
-            ParseCommand(command, out cmd, out args);
-            if (cmd == null)
-            {
-                return null;
-            }
+            // TODO: Handle non-universal commands
 
-            // TODO: Handle non-Covalence commands
-
-            //iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, id.ToString()), cmd));
-            return null;
+            iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, iplayer.Id), cmd));
+            return true;
         }
 
         /// <summary>
@@ -231,5 +233,45 @@ namespace Oxide.Game.TheForest
         }
 
         #endregion Player Hooks
+
+        #region Server Hooks
+
+        /// <summary>
+        /// Called when a command was run from the server
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="command"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HookMethod("IOnServerCommand")]
+        private object IOnServerCommand(BoltConnection connection, string command, string data)
+        {
+            if (command.Length != 0)
+            {
+                // Create array of arguments
+                string[] args = data.Split(' ');
+
+                // Call the hook for plugins
+                if (Interface.Call("OnServerCommand", command, args) != null)
+                {
+                    return true;
+                }
+
+                // Is this a covalence command?
+                IPlayer iplayer = new TheForestConsolePlayer();
+                if (Covalence.CommandSystem.HandleConsoleMessage(iplayer, $"{command} {data}"))
+                {
+                    return true;
+                }
+
+                // TODO: Handle non-Covalence commmands
+
+                iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, iplayer.Id), command));
+            }
+
+            return true;
+        }
+
+        #endregion Server Hooks
     }
 }

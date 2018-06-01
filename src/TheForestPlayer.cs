@@ -40,7 +40,7 @@ namespace Oxide.Game.TheForest
             cSteamId = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId];
             steamId = cSteamId.m_SteamID;
             Id = steamId.ToString();
-            Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? "Unnamed";
+            Name = (entity.GetState<IPlayerState>().name?.Sanitize() ?? Name) ?? "Unnamed";
             stats = entity.GetComponentInChildren<PlayerStats>();
             this.entity = entity;
         }
@@ -336,7 +336,7 @@ namespace Oxide.Game.TheForest
         {
             AdminCommand adminCommand = AdminCommand.Create(entity.source);
             adminCommand.Command = command;
-            adminCommand.Data = string.Concat(args.Select(o => o.ToString()).ToArray());
+            adminCommand.Data = string.Join(" ", Array.ConvertAll(args, x => x.ToString()));
             adminCommand.Send();
         }
 
