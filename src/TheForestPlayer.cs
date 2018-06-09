@@ -6,7 +6,6 @@ using System;
 using System.Globalization;
 using System.Linq;
 using TheForest.Utils;
-using UdpKit;
 using UnityEngine;
 
 namespace Oxide.Game.TheForest
@@ -88,7 +87,7 @@ namespace Oxide.Game.TheForest
         /// <summary>
         /// Gets the player's average network ping
         /// </summary>
-        public int Ping => Convert.ToInt32(entity.source.PingNetwork);
+        public int Ping => Convert.ToInt32(entity.source.PingNetwork); // TODO: Test
 
         /// <summary>
         /// Gets the player's language
@@ -98,12 +97,12 @@ namespace Oxide.Game.TheForest
         /// <summary>
         /// Returns if the player is admin
         /// </summary>
-        public bool IsAdmin => entity?.source?.IsDedicatedServerAdmin() ?? false;
+        public bool IsAdmin => entity?.source?.IsDedicatedServerAdmin() ?? false; // TODO: Test
 
         /// <summary>
         /// Gets if the player is banned
         /// </summary>
-        public bool IsBanned => CoopKick.IsBanned(new UdpSteamID(steamId));
+        public bool IsBanned => CoopKick.IsBanned(steamId);
 
         /// <summary>
         /// Returns if the player is connected
@@ -165,22 +164,33 @@ namespace Oxide.Game.TheForest
         /// Heals the player's character by specified amount
         /// </summary>
         /// <param name="amount"></param>
-        public void Heal(float amount) => stats.Health += amount;
+        public void Heal(float amount) => stats.Health += amount; // TODO: Test
 
         /// <summary>
         /// Gets/sets the player's health
         /// </summary>
         public float Health
         {
+            /*GameObject deadTriggerObject = player.DeadTriggerObject;
+            if (deadTriggerObject != null && deadTriggerObject.activeSelf)
+            {
+                RespawnDeadTrigger component = deadTriggerObject.GetComponent<RespawnDeadTrigger>();
+                PlayerHealed phealed = PlayerHealed.Create(GlobalTargets.Others);
+                phealed.HealingItemId = component._healItemId;
+                phealed.HealTarget = player.Entity;
+                phealed.Send();
+                component.SendMessage("SetActive", false);
+            }*/
+
             get => stats.Health;
-            set => stats.Health = value;
+            set => stats.Health = value; // TODO: Test
         }
 
         /// <summary>
         /// Damages the player's character by specified amount
         /// </summary>
         /// <param name="amount"></param>
-        public void Hurt(float amount) => stats.Hit((int)amount, true);
+        public void Hurt(float amount) => stats.Hit((int)amount, true); // TODO: Test
 
         /// <summary>
         /// Kicks the player from the game
@@ -231,7 +241,7 @@ namespace Oxide.Game.TheForest
         /// <param name="z"></param>
         public void Teleport(float x, float y, float z)
         {
-            entity.gameObject.transform.position = new Vector3(x, y, z);
+            entity.transform.localPosition = new Vector3(x, y, z); // TODO: Fix if the game ever supports this
         }
 
         /// <summary>

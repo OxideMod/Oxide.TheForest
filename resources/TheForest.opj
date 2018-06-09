@@ -1279,7 +1279,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "MeKBomMHNch/jl0Ty4oa6Z22evVnTzwrVppr8kZmTRc=",
+            "MSILHash": "ALCPossXV273f+872a4Xhqlzs1hMnRNzqUQHsFEtCLI=",
             "BaseHookName": null,
             "HookCategory": "Server"
           }
@@ -1303,7 +1303,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "MeKBomMHNch/jl0Ty4oa6Z22evVnTzwrVppr8kZmTRc=",
+            "MSILHash": "ALCPossXV273f+872a4Xhqlzs1hMnRNzqUQHsFEtCLI=",
             "BaseHookName": "InitOxide [internal]",
             "HookCategory": "Server"
           }
@@ -1335,29 +1335,6 @@
         {
           "Type": "Modify",
           "Hook": {
-            "InjectionIndex": 7,
-            "RemoveCount": 15,
-            "Instructions": [],
-            "HookTypeName": "Modify",
-            "Name": "RemoveShowLogs [patch]",
-            "HookName": "RemoveShowLogs [patch]",
-            "AssemblyName": "Assembly-CSharp.dll",
-            "TypeName": "CoopDedicatedBootstrap",
-            "Flagged": false,
-            "Signature": {
-              "Exposure": 0,
-              "Name": "Awake",
-              "ReturnType": "System.Void",
-              "Parameters": []
-            },
-            "MSILHash": "MeKBomMHNch/jl0Ty4oa6Z22evVnTzwrVppr8kZmTRc=",
-            "BaseHookName": "InitLogging [internal]",
-            "HookCategory": "_Patches"
-          }
-        },
-        {
-          "Type": "Modify",
-          "Hook": {
             "InjectionIndex": 0,
             "RemoveCount": 0,
             "Instructions": [
@@ -1380,35 +1357,6 @@
               "Parameters": []
             },
             "MSILHash": "rY3rv6YCTKmpnqx6Y04oUEUstfozXIeGDWztgNccONE=",
-            "BaseHookName": null,
-            "HookCategory": "_Patches"
-          }
-        },
-        {
-          "Type": "Modify",
-          "Hook": {
-            "InjectionIndex": 0,
-            "RemoveCount": 5,
-            "Instructions": [
-              {
-                "OpCode": "call",
-                "OpType": "Method",
-                "Operand": "mscorlib|System.Environment|get_CurrentDirectory"
-              }
-            ],
-            "HookTypeName": "Modify",
-            "Name": "ConfigDirInRoot [patch]",
-            "HookName": "ConfigDirInRoot [patch]",
-            "AssemblyName": "Assembly-CSharp.dll",
-            "TypeName": "SteamDSConfig",
-            "Flagged": false,
-            "Signature": {
-              "Exposure": 2,
-              "Name": "GetServerCfgDir",
-              "ReturnType": "System.String",
-              "Parameters": []
-            },
-            "MSILHash": "6wQrOtDaWj6sL7Hou26Xloqs0Xa9IzOb7Wq0TJNJBK8=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
