@@ -39,8 +39,8 @@
             "ArgumentBehavior": 2,
             "ArgumentString": "",
             "HookTypeName": "Simple",
-            "Name": "OnPlayerConnected",
-            "HookName": "OnPlayerConnected",
+            "Name": "IOnPlayerRespawn [internal]",
+            "HookName": "IOnPlayerRespawn",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "CoopServerCallbacks",
             "Flagged": false,
@@ -1474,7 +1474,7 @@
         {
           "Type": "Simple",
           "Hook": {
-            "InjectionIndex": 73,
+            "InjectionIndex": 70,
             "ReturnBehavior": 0,
             "ArgumentBehavior": 2,
             "ArgumentString": null,
@@ -1493,7 +1493,7 @@
               ]
             },
             "MSILHash": "fXUeIvxsUVVcdFqvIKffkv2rDqMFLIlB2c4blPB+XcQ=",
-            "BaseHookName": "OnPlayerConnected",
+            "BaseHookName": "IOnPlayerRespawn [internal]",
             "HookCategory": "Player"
           }
         },
@@ -1851,6 +1851,107 @@
             "MSILHash": "XGb2RPeQdJVzgSLn3258fO013bPUdWoEW23/a3MWWU4=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 44,
+            "RemoveCount": 8,
+            "Instructions": [],
+            "HookTypeName": "Modify",
+            "Name": "FixFakeConnect [patch]",
+            "HookName": "FixFakeConnect [patch]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopServerCallbacks",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "EntityReceived",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "BoltEntity"
+              ]
+            },
+            "MSILHash": "fXUeIvxsUVVcdFqvIKffkv2rDqMFLIlB2c4blPB+XcQ=",
+            "BaseHookName": "OnPlayerSpawn",
+            "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 39,
+            "RemoveCount": 2,
+            "Instructions": [],
+            "HookTypeName": "Modify",
+            "Name": "FixFakeDisconnect [patch 1]",
+            "HookName": "FixFakeDisconnect [patch 1]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopServerCallbacks",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "EntityDetached",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "BoltEntity"
+              ]
+            },
+            "MSILHash": "03Jtu4o1vnyuwhuAM+s2FlX1NmTLjVf2i6vM8Q07w6o=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 40,
+            "RemoveCount": 8,
+            "Instructions": [],
+            "HookTypeName": "Modify",
+            "Name": "FixFakeDisconnect [patch 2]",
+            "HookName": "FixFakeDisconnect [patch 2]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopServerCallbacks",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "EntityDetached",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "BoltEntity"
+              ]
+            },
+            "MSILHash": "03Jtu4o1vnyuwhuAM+s2FlX1NmTLjVf2i6vM8Q07w6o=",
+            "BaseHookName": "FixFakeDisconnect [patch 1]",
+            "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Simple",
+          "Hook": {
+            "InjectionIndex": 200,
+            "ReturnBehavior": 0,
+            "ArgumentBehavior": 2,
+            "ArgumentString": null,
+            "HookTypeName": "Simple",
+            "Name": "IOnPlayerConnected [internal]",
+            "HookName": "IOnPlayerConnected",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopServerCallbacks",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "Connected",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "BoltConnection"
+              ]
+            },
+            "MSILHash": "lxSnlPcblCU9aTbKP0gesr/QVJ6eIt1WG5qT73mMRls=",
+            "BaseHookName": "IOnUserApprove [internal]",
+            "HookCategory": "Player"
           }
         }
       ],
