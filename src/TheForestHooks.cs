@@ -41,13 +41,13 @@ namespace Oxide.Game.TheForest
             string ip = string.Concat(remoteIp >> 24 & 255, ".", remoteIp >> 16 & 255, ".", remoteIp >> 8 & 255, ".", remoteIp & 255);
 
             // Call out and see if we should reject
-            object canLogin = Interface.Call("CanClientLogin", connection) ?? Interface.Call("CanUserLogin", name, idString, ip); // TODO: Localization
-            if (canLogin is string || canLogin is bool && !(bool)canLogin)
+            object canLogin = Interface.Call("CanUserLogin", name, idString, ip) ?? Interface.Call("CanClientLogin", connection); // TODO: Localization
+            if (!serverInitialized || canLogin is string || canLogin is bool && !(bool)canLogin)
             {
                 // Create kick token for player
                 CoopKickToken coopKickToken = new CoopKickToken
                 {
-                    KickMessage = canLogin is string ? canLogin.ToString() : "Connection was rejected", // TODO: Localization
+                    KickMessage = !serverInitialized ? "Server not initialized yet" : canLogin is string ? canLogin.ToString() : "Connection was rejected", // TODO: Localization
                     Banned = false
                 };
 
@@ -63,13 +63,13 @@ namespace Oxide.Game.TheForest
         /// <summary>
         /// Called when the player has connected
         /// </summary>
-        /// <param name="entity"></param>
-        [HookMethod("OnPlayerConnected")]
-        private void OnPlayerConnected(BoltEntity entity)
+        /// <param name="connection"></param>
+        [HookMethod("IOnPlayerConnected")]
+        private void IOnPlayerConnected(BoltConnection connection)
         {
-            string id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString();
+            string id = SteamDSConfig.clientConnectionInfo[connection.ConnectionId].m_SteamID.ToString();
             IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
-            string name = entity.GetState<IPlayerState>().name?.Sanitize() ?? (!string.IsNullOrEmpty(iplayer?.Name) ? iplayer.Name : "Unnamed");
+            string name = !string.IsNullOrEmpty(iplayer?.Name) ? iplayer.Name : "Unnamed";
 
             // Update player's permissions group and name
             if (permission.IsLoaded)
@@ -81,7 +81,7 @@ namespace Oxide.Game.TheForest
                     permission.AddUserGroup(id, defaultGroups.Players);
                 }
 
-                if (entity.source.IsDedicatedServerAdmin() && !permission.UserHasGroup(id, defaultGroups.Administrators))
+                if (connection.IsDedicatedServerAdmin() && !permission.UserHasGroup(id, defaultGroups.Administrators))
                 {
                     permission.AddUserGroup(id, defaultGroups.Administrators);
                 }
@@ -89,22 +89,43 @@ namespace Oxide.Game.TheForest
                 permission.UpdateNickname(id, name);
             }
 
+            if (iplayer != null)
+            {
+                // Call universal hook
+                Interface.Call("OnUserConnected", iplayer);
+
+                // Call game hook
+                Interface.Call("OnPlayerConnected", connection);
+            }
+        }
+
+        /// <summary>
+        /// Called when the player has respawned
+        /// </summary>
+        /// <param name="entity"></param>
+        [HookMethod("IOnPlayerRespawn")]
+        private void IOnPlayerRespawn(BoltEntity entity)
+        {
             // Handle universal player connecting
             Covalence.PlayerManager.PlayerConnected(entity);
 
-            // Get updated IPlayer after entity is set
-            iplayer = Covalence.PlayerManager.FindPlayerById(id);
+            string id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString();
+            IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
 
             if (iplayer != null)
             {
                 // Set IPlayer for BoltEntity
                 entity.IPlayer = iplayer;
 
-                // Call universal hook
-                Interface.Call("OnUserConnected", iplayer);
-            }
+                // Get updated IPlayer after entity is set
+                Covalence.PlayerManager.FindPlayerById(id);
 
-            Interface.Oxide.LogInfo($"{id}/{name} joined");
+                // Call universal hook
+                Interface.Call("OnUserRespawn", iplayer);
+
+                // Call game hook
+                Interface.Call("OnPlayerRespawn", entity);
+            }
         }
 
         /// <summary>
