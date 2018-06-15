@@ -1356,7 +1356,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "rY3rv6YCTKmpnqx6Y04oUEUstfozXIeGDWztgNccONE=",
+            "MSILHash": "X0HBEtOdYEYPkufeaj7GL2DC1o8cPcBRB4TOoPGQLPo=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
@@ -1848,7 +1848,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "XGb2RPeQdJVzgSLn3258fO013bPUdWoEW23/a3MWWU4=",
+            "MSILHash": "ReR89EgMwDbL97e+4fZN/Etc4IKsyFkJJnEJCdelJZ4=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
