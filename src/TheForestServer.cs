@@ -28,6 +28,7 @@ namespace Oxide.Game.TheForest
         }
 
         private static IPAddress address;
+        private static IPAddress localAddress;
 
         /// <summary>
         /// Gets the public-facing IP address of the server, if known
@@ -40,17 +41,51 @@ namespace Oxide.Game.TheForest
                 {
                     if (address == null)
                     {
-                        WebClient webClient = new WebClient();
-                        IPAddress.TryParse(webClient.DownloadString("http://api.ipify.org"), out address);
-                        return address;
+                        uint ip;
+                        if (Utility.ValidateIPv4(SteamDSConfig.ServerAddress) && !Utility.IsLocalIP(SteamDSConfig.ServerAddress))
+                        {
+                            IPAddress.TryParse(SteamDSConfig.ServerAddress, out address);
+                            Interface.Oxide.LogInfo($"IP address from command-line: {address}");
+                        }
+                        else if ((ip = SteamGameServer.GetPublicIP()) > 0)
+                        {
+                            string publicIp = string.Concat(ip >> 24 & 255, ".", ip >> 16 & 255, ".", ip >> 8 & 255, ".", ip & 255); // TODO: uint IP address utility method
+                            IPAddress.TryParse(publicIp, out address);
+                            Interface.Oxide.LogInfo($"IP address from Steam query: {address}");
+                        }
+                        else
+                        {
+                            WebClient webClient = new WebClient();
+                            IPAddress.TryParse(webClient.DownloadString("http://api.ipify.org"), out address);
+                            Interface.Oxide.LogInfo($"IP address from external API: {address}");
+                        }
                     }
 
                     return address;
                 }
                 catch (Exception ex)
                 {
-                    RemoteLogger.Exception("Couldn't get server IP address", ex);
-                    return new IPAddress(0);
+                    RemoteLogger.Exception("Couldn't get server's public IP address", ex);
+                    return IPAddress.Any;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the local IP address of the server, if known
+        /// </summary>
+        public IPAddress LocalAddress
+        {
+            get
+            {
+                try
+                {
+                    return localAddress ?? (localAddress = Utility.GetLocalIP());
+                }
+                catch (Exception ex)
+                {
+                    RemoteLogger.Exception("Couldn't get server's local IP address", ex);
+                    return IPAddress.Any;
                 }
             }
         }
