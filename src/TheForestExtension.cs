@@ -4,7 +4,6 @@ using Oxide.Core.Extensions;
 using Oxide.Core.RemoteConsole;
 using Oxide.Plugins;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -50,8 +49,9 @@ namespace Oxide.Game.TheForest
         /// <summary>
         /// Default game-specific references for use in plugins
         /// </summary>
-        internal static readonly HashSet<string> DefaultReferences = new HashSet<string>
+        public override string[] DefaultReferences => new[]
         {
+            ""
         };
 
         /// <summary>
