@@ -1356,7 +1356,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "X0HBEtOdYEYPkufeaj7GL2DC1o8cPcBRB4TOoPGQLPo=",
+            "MSILHash": "G1v73Dyb6d+VWAdIFVPE5JxflkWwFo/7mIvKbEGHQPA=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
