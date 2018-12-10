@@ -85,6 +85,7 @@ namespace Oxide.Game.TheForest
             "PlayerPreferences.Load",
             "Please initialize AssetBundleManifest by calling",
             "Refreshing Input Mapping Icons",
+            "RenderTexture.Create failed:",
             "Set a LogOnAnonymous",
             "Started.",
             "SteamManager - Awake",
