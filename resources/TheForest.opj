@@ -52,7 +52,7 @@
                 "Burn"
               ]
             },
-            "MSILHash": "85PNuBH6bWek7p6atSfPgD+35cwq3lVxaG18FKNt7F4=",
+            "MSILHash": "BTIkJib8I9J26Q1l8GcLI4eS0RbxUU9vEgEBFPoM21I=",
             "BaseHookName": null,
             "HookCategory": "_TESTED"
           }
@@ -1338,7 +1338,7 @@
         {
           "Type": "Modify",
           "Hook": {
-            "InjectionIndex": 90,
+            "InjectionIndex": 92,
             "RemoveCount": 20,
             "Instructions": [
               {
@@ -1414,7 +1414,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "r+O/tVIMWbdaK3VpynJR0kK806Kwqh5WMlBOe0lu4Bg=",
+            "MSILHash": "soDOrZpProiRr3EYWZ9Y8CnKvuczf5ZcyeuFcqG2Tbg=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
@@ -1690,7 +1690,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "r+O/tVIMWbdaK3VpynJR0kK806Kwqh5WMlBOe0lu4Bg=",
+            "MSILHash": "soDOrZpProiRr3EYWZ9Y8CnKvuczf5ZcyeuFcqG2Tbg=",
             "BaseHookName": "ConfigFileInRoot [patch]",
             "HookCategory": "_Patches"
           }
@@ -1796,7 +1796,7 @@
               "ReturnType": "System.Void",
               "Parameters": []
             },
-            "MSILHash": "D9DpwKB+42+XwLlTXyzUY0XSB9iZsfOjTU7FKvyRn/g=",
+            "MSILHash": "WbO3ky/VkqqP8+A2qiH25jSpYbl+aR6oTwI87AM+2Xo=",
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
