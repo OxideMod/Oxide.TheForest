@@ -1976,6 +1976,121 @@
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 41,
+            "RemoveCount": 0,
+            "Instructions": [
+              {
+                "OpCode": "ldarg_0",
+                "OpType": "None",
+                "Operand": null
+              },
+              {
+                "OpCode": "ldarg_1",
+                "OpType": "None",
+                "Operand": null
+              },
+              {
+                "OpCode": "ldstr",
+                "OpType": "String",
+                "Operand": "-targetfpsactive"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "Assembly-CSharp|SteamDSConfig|get_TargetFpsActive"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "Assembly-CSharp|CoopDedicatedBootstrap|GetIntArg"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "Assembly-CSharp|SteamDSConfig|set_TargetFpsActive"
+              },
+              {
+                "OpCode": "ldarg_0",
+                "OpType": "None",
+                "Operand": null
+              },
+              {
+                "OpCode": "ldarg_1",
+                "OpType": "None",
+                "Operand": null
+              },
+              {
+                "OpCode": "ldstr",
+                "OpType": "String",
+                "Operand": "-targetfpsidle"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "Assembly-CSharp|SteamDSConfig|get_TargetFpsIdle"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "Assembly-CSharp|CoopDedicatedBootstrap|GetIntArg"
+              },
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "Assembly-CSharp|SteamDSConfig|set_TargetFpsIdle"
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "FixMissingFpsArgs [patch]",
+            "HookName": "FixMissingFpsArgs [patch]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopDedicatedBootstrap",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 0,
+              "Name": "ServerRoutine",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "System.String[]"
+              ]
+            },
+            "MSILHash": "ne4fyCRWd4A/XYaoZ77zCDXifGoqLAD0HT25an1UmUM=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 0,
+            "RemoveCount": 1,
+            "Instructions": [
+              {
+                "OpCode": "call",
+                "OpType": "Method",
+                "Operand": "Assembly-CSharp|SteamDSConfig|get_TreeRegrowMode"
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "FixTreeRegrowModeOpt [patch]",
+            "HookName": "FixTreeRegrowModeOpt [patch]",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "ShelterTrigger",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "CheckRegrowTrees",
+              "ReturnType": "System.Void",
+              "Parameters": []
+            },
+            "MSILHash": "ZMe3ZCbnR+n7AM3xec3JrR7O9To+DPbJzRmm0qybAYU=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
         }
       ],
       "Modifiers": [
