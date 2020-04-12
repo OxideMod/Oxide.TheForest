@@ -148,12 +148,11 @@ namespace Oxide.Game.TheForest
         /// <param name="id"></param>
         /// <param name="reason"></param>
         /// <param name="duration"></param>
-        public void Ban(string id, string reason, TimeSpan duration = default(TimeSpan))
+        public void Ban(string id, string reason, TimeSpan duration = default)
         {
             if (!IsBanned(id))
             {
-                ulong steamId;
-                if (ulong.TryParse(id, out steamId))
+                if (ulong.TryParse(id, out ulong steamId))
                 {
                     Scene.HudGui.MpPlayerList.Ban(steamId);
                     CoopKick.SaveList();
@@ -167,8 +166,7 @@ namespace Oxide.Game.TheForest
         /// <param name="id"></param>
         public TimeSpan BanTimeRemaining(string id)
         {
-            ulong steamId;
-            if (ulong.TryParse(id, out steamId))
+            if (ulong.TryParse(id, out ulong steamId))
             {
                 CoopKick.KickedPlayer kickedPlayer = CoopKick.Instance.KickedPlayers.First(p => p.SteamId == steamId);
                 return kickedPlayer != null ? TimeSpan.FromTicks(kickedPlayer.BanEndTime) : TimeSpan.Zero;
@@ -183,8 +181,7 @@ namespace Oxide.Game.TheForest
         /// <param name="id"></param>
         public bool IsBanned(string id)
         {
-            ulong steamId;
-            return ulong.TryParse(id, out steamId) && CoopKick.IsBanned(new UdpSteamID(steamId));
+            return ulong.TryParse(id, out ulong steamId) && CoopKick.IsBanned(new UdpSteamID(steamId));
         }
 
         /// <summary>
@@ -193,8 +190,7 @@ namespace Oxide.Game.TheForest
         /// <param name="id"></param>
         public bool IsConnected(string id)
         {
-            ulong steamId;
-            return ulong.TryParse(id, out steamId) && SteamDSConfig.clientConnectionInfo.Any(c => c.Value == new CSteamID(steamId));
+            return ulong.TryParse(id, out ulong steamId) && SteamDSConfig.clientConnectionInfo.Any(c => c.Value == new CSteamID(steamId));
         }
 
         /// <summary>
@@ -204,8 +200,7 @@ namespace Oxide.Game.TheForest
         /// <param name="reason"></param>
         public void Kick(string id, string reason)
         {
-            ulong steamId;
-            if (ulong.TryParse(id, out steamId))
+            if (ulong.TryParse(id, out ulong steamId))
             {
                 uint connectionId = SteamDSConfig.clientConnectionInfo.First(c => c.Value == new CSteamID(steamId)).Key; // TODO: This might error
                 BoltConnection connection = BoltNetwork.connections.First(c => c.ConnectionId == connectionId);
@@ -235,8 +230,7 @@ namespace Oxide.Game.TheForest
         {
             if (IsBanned(id))
             {
-                ulong steamId;
-                if (ulong.TryParse(id, out steamId))
+                if (ulong.TryParse(id, out ulong steamId))
                 {
                     CoopKick.UnBanPlayer(steamId);
                 }

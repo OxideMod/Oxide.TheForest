@@ -77,8 +77,7 @@ namespace Oxide.Game.TheForest
         {
             get
             {
-                P2PSessionState_t sessionState;
-                SteamGameServerNetworking.GetP2PSessionState(cSteamId, out sessionState);
+                SteamGameServerNetworking.GetP2PSessionState(cSteamId, out P2PSessionState_t sessionState);
                 uint ip = sessionState.m_nRemoteIP;
                 return string.Concat(ip >> 24 & 255, ".", ip >> 16 & 255, ".", ip >> 8 & 255, ".", ip & 255);
             }
@@ -128,7 +127,7 @@ namespace Oxide.Game.TheForest
         /// </summary>
         /// <param name="reason"></param>
         /// <param name="duration"></param>
-        public void Ban(string reason, TimeSpan duration = default(TimeSpan))
+        public void Ban(string reason, TimeSpan duration = default)
         {
             if (!IsBanned)
             {

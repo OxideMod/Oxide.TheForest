@@ -95,9 +95,7 @@ namespace Oxide.Game.TheForest
 
                 permission.RegisterValidate(s =>
                 {
-                    ulong temp;
-
-                    if (!ulong.TryParse(s, out temp))
+                    if (!ulong.TryParse(s, out ulong temp))
                     {
                         return false;
                     }

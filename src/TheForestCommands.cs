@@ -300,9 +300,7 @@ namespace Oxide.Game.TheForest
             {
                 foreach (string name in loader.ScanDirectory(Interface.Oxide.PluginDirectory).Except(loadedPluginNames))
                 {
-                    string msg;
-
-                    unloadedPluginErrors[name] = loader.PluginErrors.TryGetValue(name, out msg) ? msg : "Unloaded"; // TODO: Localization
+                    unloadedPluginErrors[name] = loader.PluginErrors.TryGetValue(name, out string msg) ? msg : "Unloaded"; // TODO: Localization
                 }
             }
 

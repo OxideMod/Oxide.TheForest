@@ -15,10 +15,10 @@ namespace Oxide.Game.TheForest
         internal TheForestConsolePlayer consolePlayer;
 
         // Command handler
-        private CommandHandler commandHandler;
+        private readonly CommandHandler commandHandler;
 
         // All registered commands
-        private IDictionary<string, CommandCallback> registeredCommands;
+        private readonly IDictionary<string, CommandCallback> registeredCommands;
 
         /// <summary>
         /// Initializes the command system
@@ -32,8 +32,7 @@ namespace Oxide.Game.TheForest
 
         private bool ChatCommandCallback(IPlayer caller, string command, string[] args)
         {
-            CommandCallback callback;
-            return registeredCommands.TryGetValue(command, out callback) && callback(caller, command, args);
+            return registeredCommands.TryGetValue(command, out CommandCallback callback) && callback(caller, command, args);
         }
 
         #endregion Initialization

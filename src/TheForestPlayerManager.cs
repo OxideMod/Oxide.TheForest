@@ -1,4 +1,4 @@
-﻿extern alias References;
+extern alias References;
 
 using Oxide.Core;
 using Oxide.Core.Libraries.Covalence;
@@ -42,8 +42,7 @@ namespace Oxide.Game.TheForest
         {
             string id = userId.ToString();
 
-            PlayerRecord record;
-            if (playerData.TryGetValue(id, out record))
+            if (playerData.TryGetValue(id, out PlayerRecord record))
             {
                 record.Name = name;
                 playerData[id] = record;
@@ -99,8 +98,7 @@ namespace Oxide.Game.TheForest
         /// <returns></returns>
         public IPlayer FindPlayerById(string id)
         {
-            TheForestPlayer player;
-            return allPlayers.TryGetValue(id, out player) ? player : null;
+            return allPlayers.TryGetValue(id, out TheForestPlayer player) ? player : null;
         }
 
         /// <summary>

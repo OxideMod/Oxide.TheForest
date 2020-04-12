@@ -35,8 +35,7 @@ namespace Oxide.Game.TheForest
             Covalence.PlayerManager.PlayerJoin(id, name);
 
             // Get IP address from Steam
-            P2PSessionState_t sessionState;
-            SteamGameServerNetworking.GetP2PSessionState(cSteamId, out sessionState);
+            SteamGameServerNetworking.GetP2PSessionState(cSteamId, out P2PSessionState_t sessionState);
             uint remoteIp = sessionState.m_nRemoteIP;
             string ip = string.Concat(remoteIp >> 24 & 255, ".", remoteIp >> 16 & 255, ".", remoteIp >> 8 & 255, ".", remoteIp & 255);
 
@@ -193,9 +192,7 @@ namespace Oxide.Game.TheForest
             evt.Message = '/' + evt.Message.Substring(1);
 
             // Get the command and parse it
-            string cmd;
-            string[] args;
-            ParseCommand(evt.Message.Substring(1), out cmd, out args);
+            ParseCommand(evt.Message.Substring(1), out string cmd, out string[] args);
             if (cmd == null)
             {
                 return null;
