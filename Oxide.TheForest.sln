@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2008
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 15.0
 Project("{8A1C70B9-FDEA-4CD4-B3FC-771843643A9F}") = "Oxide.TheForest", "src\Oxide.TheForest.csproj", "{183056B0-1635-46BB-81CC-8669EE46E83F}"
 EndProject
