@@ -24,24 +24,26 @@ namespace Oxide.Game.TheForest
         private object IOnUserApprove(BoltConnection connection)
         {
             CSteamID cSteamId = SteamDSConfig.clientConnectionInfo[connection.ConnectionId];
-            string idString = cSteamId.ToString();
-            ulong id = cSteamId.m_SteamID;
+            string playerId = cSteamId.ToString();
+            ulong steamId = cSteamId.m_SteamID;
 
             // Check for existing player's name
-            IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(idString);
-            string name = !string.IsNullOrEmpty(iplayer?.Name) ? iplayer.Name : "Unnamed";
+            IPlayer player = Covalence.PlayerManager.FindPlayerById(playerId);
+            string name = !string.IsNullOrEmpty(player?.Name) ? player.Name : "Unnamed";
 
             // Handle universal player joining
-            Covalence.PlayerManager.PlayerJoin(id, name);
+            Covalence.PlayerManager.PlayerJoin(steamId, name);
 
             // Get IP address from Steam
             SteamGameServerNetworking.GetP2PSessionState(cSteamId, out P2PSessionState_t sessionState);
             uint remoteIp = sessionState.m_nRemoteIP;
-            string ip = string.Concat(remoteIp >> 24 & 255, ".", remoteIp >> 16 & 255, ".", remoteIp >> 8 & 255, ".", remoteIp & 255);
+            string playerIp = string.Concat(remoteIp >> 24 & 255, ".", remoteIp >> 16 & 255, ".", remoteIp >> 8 & 255, ".", remoteIp & 255);
 
             // Call out and see if we should reject
-            object canLogin = Interface.Call("CanUserLogin", name, idString, ip) ?? Interface.Call("CanClientLogin", connection); // TODO: Localization
-            if (!serverInitialized || canLogin is string || canLogin is bool && !(bool)canLogin)
+            object loginSpecific = Interface.Call("CanClientLogin", connection);
+            object loginCovalence = Interface.Call("CanUserLogin", name, playerId, playerIp);
+            object canLogin = loginSpecific is null ? loginCovalence : loginSpecific;
+            if (!serverInitialized || canLogin is string || canLogin is bool loginBlocked && !loginBlocked)
             {
                 // Create kick token for player
                 CoopKickToken coopKickToken = new CoopKickToken
@@ -55,8 +57,10 @@ namespace Oxide.Game.TheForest
                 return true;
             }
 
-            // Call game and covalence hooks
-            return Interface.Call("OnUserApprove", connection) ?? Interface.Call("OnUserApproved", name, idString, ip); // TODO: Localization
+            // Call hooks for plugins
+            object approvedSpecific = Interface.Call("OnUserApprove", connection);
+            object approvedCovalence = Interface.Call("OnUserApproved", name, playerId, playerIp);
+            return approvedSpecific is null ? approvedCovalence : approvedSpecific;
         }
 
         /// <summary>
@@ -66,35 +70,30 @@ namespace Oxide.Game.TheForest
         [HookMethod("IOnPlayerConnected")]
         private void IOnPlayerConnected(BoltConnection connection)
         {
-            string id = SteamDSConfig.clientConnectionInfo[connection.ConnectionId].m_SteamID.ToString();
-            IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
-            string name = !string.IsNullOrEmpty(iplayer?.Name) ? iplayer.Name : "Unnamed";
+            string playerId = SteamDSConfig.clientConnectionInfo[connection.ConnectionId].m_SteamID.ToString();
+            IPlayer player = Covalence.PlayerManager.FindPlayerById(playerId);
+            string playerName = !string.IsNullOrEmpty(player?.Name) ? player.Name : "Unnamed"; // TODO: Localization
 
-            // Update player's permissions group and name
+            // Update name and groups with permissions
             if (permission.IsLoaded)
             {
+                permission.UpdateNickname(playerId, playerName);
                 OxideConfig.DefaultGroups defaultGroups = Interface.Oxide.Config.Options.DefaultGroups;
-
-                if (!permission.UserHasGroup(id, defaultGroups.Players))
+                if (!permission.UserHasGroup(playerId, defaultGroups.Players))
                 {
-                    permission.AddUserGroup(id, defaultGroups.Players);
+                    permission.AddUserGroup(playerId, defaultGroups.Players);
                 }
-
-                if (connection.IsDedicatedServerAdmin() && !permission.UserHasGroup(id, defaultGroups.Administrators))
+                if (connection.IsDedicatedServerAdmin() && !permission.UserHasGroup(playerId, defaultGroups.Administrators))
                 {
-                    permission.AddUserGroup(id, defaultGroups.Administrators);
+                    permission.AddUserGroup(playerId, defaultGroups.Administrators);
                 }
-
-                permission.UpdateNickname(id, name);
             }
 
-            if (iplayer != null)
+            if (player != null)
             {
-                // Call universal hook
-                Interface.Call("OnUserConnected", iplayer);
-
-                // Call game hook
+                // Call hooks for plugins
                 Interface.Call("OnPlayerConnected", connection);
+                Interface.Call("OnUserConnected", player);
             }
         }
 
@@ -108,22 +107,19 @@ namespace Oxide.Game.TheForest
             // Handle universal player connecting
             Covalence.PlayerManager.PlayerConnected(entity);
 
-            string id = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString();
-            IPlayer iplayer = Covalence.PlayerManager.FindPlayerById(id);
-
-            if (iplayer != null)
+            string playerId = SteamDSConfig.clientConnectionInfo[entity.source.ConnectionId].m_SteamID.ToString();
+            IPlayer player = Covalence.PlayerManager.FindPlayerById(playerId);
+            if (player != null)
             {
                 // Set IPlayer for BoltEntity
-                entity.IPlayer = iplayer;
+                entity.IPlayer = player;
 
                 // Get updated IPlayer after entity is set
-                Covalence.PlayerManager.FindPlayerById(id);
+                Covalence.PlayerManager.FindPlayerById(playerId);
 
-                // Call universal hook
-                Interface.Call("OnUserRespawn", iplayer);
-
-                // Call game hook
+                // Call hooks for plugins
                 Interface.Call("OnPlayerRespawn", entity);
+                Interface.Call("OnUserRespawn", player);
             }
         }
 
@@ -134,14 +130,14 @@ namespace Oxide.Game.TheForest
         [HookMethod("OnPlayerSpawn")]
         private void OnPlayerSpawn(BoltEntity entity)
         {
-            IPlayer iplayer = entity.IPlayer;
-            if (iplayer != null)
+            IPlayer player = entity.IPlayer;
+            if (player != null)
             {
                 // Set player name if available
-                iplayer.Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? (!string.IsNullOrEmpty(iplayer.Name) ? iplayer.Name : "Unnamed");
+                player.Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? (!string.IsNullOrEmpty(player.Name) ? player.Name : "Unnamed"); // TODO: Localization
 
-                // Call universal hook
-                Interface.Call("OnUserSpawn", iplayer);
+                // Call hooks for plugins
+                Interface.Call("OnUserSpawn", player);
             }
         }
 
@@ -163,58 +159,60 @@ namespace Oxide.Game.TheForest
                 return null;
             }
 
-            IPlayer iplayer = entity.IPlayer;
-            if (iplayer == null)
+            IPlayer player = entity.IPlayer;
+            if (player == null)
             {
                 return null;
             }
 
             // Set player name if available
-            iplayer.Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? (!string.IsNullOrEmpty(iplayer.Name) ? iplayer.Name : "Unnamed");
+            player.Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? (!string.IsNullOrEmpty(player.Name) ? player.Name : "Unnamed"); // TODO: Localization
 
             // Is it a chat command?
             string str = evt.Message.Substring(0, 1);
             if (!str.Equals("/") && !str.Equals("!"))
             {
-                // Call the hooks for plugins
-                object chatUniversal = Interface.Call("OnUserChat", iplayer, evt.Message);
+                // Call hooks for plugins
                 object chatSpecific = Interface.Call("OnPlayerChat", entity, evt.Message);
-                if (chatUniversal != null || chatSpecific != null)
+                object chatCovalence = Interface.Call("OnUserChat", player, evt.Message);
+                object canChat = chatSpecific is null ? chatCovalence : chatSpecific;
+                if (canChat is bool chatBlocked && !chatBlocked)
                 {
                     return true;
                 }
 
-                Interface.Oxide.LogInfo($"[Chat] {iplayer.Name}: {evt.Message}");
+                Interface.Oxide.LogInfo($"[Chat] {player.Name}: {evt.Message}");
                 return null;
             }
 
             // Replace ! with / for Covalence handling
             evt.Message = '/' + evt.Message.Substring(1);
 
-            // Get the command and parse it
+            // Parse the command
             ParseCommand(evt.Message.Substring(1), out string cmd, out string[] args);
             if (cmd == null)
             {
                 return null;
             }
 
-            // Call the hooks for plugins
-            object commandUniversal = Interface.Call("OnUserCommand", iplayer, cmd, args);
+            // Call hooks for plugins
             object commandSpecific = Interface.Call("OnPlayerCommand", entity, cmd, args);
-            if (commandUniversal != null || commandSpecific != null)
+            object commandCovalence = Interface.Call("OnUserCommand", player, cmd, args);
+            object canBlock = commandSpecific is null ? commandCovalence : commandSpecific;
+            if (canBlock is bool commandBlocked && !commandBlocked)
             {
                 return true;
             }
 
             // Is this a covalence command?
-            if (Covalence.CommandSystem.HandleChatMessage(iplayer, evt.Message))
+            if (Covalence.CommandSystem.HandleChatMessage(player, evt.Message))
             {
                 return true;
             }
 
             // TODO: Handle non-universal commands
 
-            iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, iplayer.Id), cmd));
+            player.Reply(string.Format(lang.GetMessage("UnknownCommand", this, player.Id), cmd));
             return true;
         }
 
@@ -231,23 +229,23 @@ namespace Oxide.Game.TheForest
                 return;
             }
 
-            IPlayer iplayer = entity.IPlayer;
-            if (iplayer == null)
+            IPlayer player = entity.IPlayer;
+            if (player == null)
             {
                 return;
             }
 
             // Set player name if available
-            iplayer.Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? (!string.IsNullOrEmpty(iplayer.Name) ? iplayer.Name : "Unnamed");
+            player.Name = entity.GetState<IPlayerState>().name?.Sanitize() ?? (!string.IsNullOrEmpty(player.Name) ? player.Name : "Unnamed"); // TODO: Localization
 
             // Call hooks for plugins
-            Interface.Call("OnUserDisconnected", iplayer, "Unknown"); // TODO: Localization
+            Interface.Call("OnUserDisconnected", player, "Unknown"); // TODO: Localization
             Interface.Call("OnPlayerDisconnected", entity, "Unknown"); // TODO: Localization
 
             // Handle universal player disconnecting
             Covalence.PlayerManager.PlayerDisconnected(entity);
 
-            Interface.Oxide.LogInfo($"{iplayer.Id}/{iplayer.Name} quit");
+            Interface.Oxide.LogInfo($"{player.Id}/{player.Name} quit"); // TODO: Localization
         }
 
         #endregion Player Hooks
@@ -269,25 +267,23 @@ namespace Oxide.Game.TheForest
                 // Create array of arguments
                 string[] args = data.Split(' ');
 
-                // Call the hook for plugins
+                // Call hooks for plugins
                 if (Interface.Call("OnServerCommand", command, args) != null)
                 {
                     return true;
                 }
 
-                // Is this a covalence command?
-                IPlayer iplayer = new TheForestConsolePlayer();
-                if (Covalence.CommandSystem.HandleConsoleMessage(iplayer, $"{command} {data}"))
+                // Is it a valid command?
+                IPlayer player = new TheForestConsolePlayer();
+                if (!Covalence.CommandSystem.HandleConsoleMessage(player, $"{command} {data}"))
                 {
-                    return true;
+                    player.Reply(string.Format(lang.GetMessage("UnknownCommand", this, player.Id), command));
                 }
 
-                // TODO: Handle non-Covalence commmands
-
-                iplayer.Reply(string.Format(lang.GetMessage("UnknownCommand", this, iplayer.Id), command));
+                return true;
             }
 
-            return true;
+            return null;
         }
 
         #endregion Server Hooks
