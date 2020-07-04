@@ -176,7 +176,7 @@ namespace Oxide.Game.TheForest
                 object chatSpecific = Interface.Call("OnPlayerChat", entity, evt.Message);
                 object chatCovalence = Interface.Call("OnUserChat", player, evt.Message);
                 object canChat = chatSpecific is null ? chatCovalence : chatSpecific;
-                if (canChat is bool chatBlocked && !chatBlocked)
+                if (canChat != null)
                 {
                     return true;
                 }
@@ -199,7 +199,7 @@ namespace Oxide.Game.TheForest
             object commandSpecific = Interface.Call("OnPlayerCommand", entity, cmd, args);
             object commandCovalence = Interface.Call("OnUserCommand", player, cmd, args);
             object canBlock = commandSpecific is null ? commandCovalence : commandSpecific;
-            if (canBlock is bool commandBlocked && !commandBlocked)
+            if (canBlock != null)
             {
                 return true;
             }
