@@ -1,8 +1,9 @@
-﻿using Oxide.Core;
+using Oxide.Core;
 using Oxide.Core.Configuration;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Steamworks;
+using System.Collections.Generic;
 using System.Linq;
 using TheForest.Utils;
 
@@ -13,6 +14,27 @@ namespace Oxide.Game.TheForest
     /// </summary>
     public partial class TheForestCore
     {
+        // All native commands
+        private Dictionary<string, int> nativeCommands = new Dictionary<string, int>(16)
+        {
+            { "save", 0 },
+            { "restart", 1 },
+            { "shutdown", 2 },
+            { "openlogs", 3 },
+            { "closelogs", 4 },
+            { "kick", 5 },
+            { "kickbycid", 6 },
+            { "ban", 7 },
+            { "banbycid", 8 },
+            { "unban", 9 },
+            { "treeregrowmode", 10 },
+            { "allowbuildingdestruction", 11 },
+            { "allowenemiescreative", 12 },
+            { "realisticplayerdamage", 13 },
+            { "allowcheats", 14 },
+            { "allowdebugconsole", 14 }
+        };
+
         #region Player Hooks
 
         /// <summary>
@@ -275,12 +297,11 @@ namespace Oxide.Game.TheForest
 
                 // Is it a valid command?
                 IPlayer player = new TheForestConsolePlayer();
-                if (!Covalence.CommandSystem.HandleConsoleMessage(player, $"{command} {data}"))
+                if (!Covalence.CommandSystem.HandleConsoleMessage(player, $"{command} {data}") && !nativeCommands.ContainsKey(command))
                 {
                     player.Reply(string.Format(lang.GetMessage("UnknownCommand", this, player.Id), command));
+                    return true;
                 }
-
-                return true;
             }
 
             return null;

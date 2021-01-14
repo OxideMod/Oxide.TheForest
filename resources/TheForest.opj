@@ -2091,6 +2091,81 @@
             "BaseHookName": null,
             "HookCategory": "_Patches"
           }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 2,
+            "RemoveCount": 0,
+            "Instructions": [
+              {
+                "OpCode": "ldarg_2",
+                "OpType": "None",
+                "Operand": null
+              },
+              {
+                "OpCode": "brfalse_s",
+                "OpType": "Instruction",
+                "Operand": 5
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "AllowConsoleCommands [patch 1]",
+            "HookName": "AllowConsoleCommands",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopAdminCommand",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "Recv",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "System.String",
+                "System.String",
+                "BoltConnection"
+              ]
+            },
+            "MSILHash": "gLo6Ssub7mNC/L6l81CyWRaL8pCxgds2sePHPMAhIqo=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
+        },
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 0,
+            "RemoveCount": 0,
+            "Instructions": [
+              {
+                "OpCode": "ldarg_1",
+                "OpType": "None",
+                "Operand": null
+              },
+              {
+                "OpCode": "brfalse_s",
+                "OpType": "Instruction",
+                "Operand": 8
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "AllowConsoleCommands [patch 2]",
+            "HookName": "AllowConsoleCommands",
+            "AssemblyName": "Assembly-CSharp.dll",
+            "TypeName": "CoopAdminCommand",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 0,
+              "Name": "SendNetworkMessage",
+              "ReturnType": "System.Void",
+              "Parameters": [
+                "System.String",
+                "BoltConnection"
+              ]
+            },
+            "MSILHash": "QtxCPsddK9mm2JOK4Qw8ng6hiUtefAgdcXLCdMHqN44=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
         }
       ],
       "Modifiers": [
