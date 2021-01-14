@@ -197,13 +197,16 @@ namespace Oxide.Game.TheForest
         /// <param name="reason"></param>
         public void Kick(string reason)
         {
-            BoltConnection connection = entity.source;
-            CoopKickToken coopKickToken = new CoopKickToken
+            if (entity?.source != null)
             {
-                KickMessage = reason,
-                Banned = false
-            };
-            connection.Disconnect(coopKickToken);
+                BoltConnection connection = entity.source;
+                CoopKickToken coopKickToken = new CoopKickToken
+                {
+                    KickMessage = reason,
+                    Banned = false
+                };
+                connection.Disconnect(coopKickToken);
+            }
         }
 
         /// <summary>
