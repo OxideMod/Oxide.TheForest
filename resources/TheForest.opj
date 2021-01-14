@@ -2463,6 +2463,55 @@
           "Flagged": false
         }
       ]
+    },
+    {
+      "AssemblyName": "Assembly-CSharp-firstpass.dll",
+      "Hooks": [
+        {
+          "Type": "Modify",
+          "Hook": {
+            "InjectionIndex": 5,
+            "RemoveCount": 0,
+            "Instructions": [
+              {
+                "OpCode": "ldarg_0",
+                "OpType": "None",
+                "Operand": null
+              },
+              {
+                "OpCode": "ldfld",
+                "OpType": "Field",
+                "Operand": "Assembly-CSharp-firstpass|FMOD_StudioSystem|eventDescriptions"
+              },
+              {
+                "OpCode": "brfalse_s",
+                "OpType": "Instruction",
+                "Operand": 25
+              }
+            ],
+            "HookTypeName": "Modify",
+            "Name": "FixGetEventDescriptionNRE [patch]",
+            "HookName": "FixGetEventDescriptionNRE",
+            "AssemblyName": "Assembly-CSharp-firstpass.dll",
+            "TypeName": "FMOD_StudioSystem",
+            "Flagged": false,
+            "Signature": {
+              "Exposure": 2,
+              "Name": "GetEventDescription",
+              "ReturnType": "FMOD.Studio.EventDescription",
+              "Parameters": [
+                "System.String",
+                "System.Boolean"
+              ]
+            },
+            "MSILHash": "8IREOijfkuumyxRuud70/BaFXtwwEzg/cZQlbW7F8us=",
+            "BaseHookName": null,
+            "HookCategory": "_Patches"
+          }
+        }
+      ],
+      "Modifiers": [],
+      "Fields": []
     }
   ]
 }
