@@ -1,6 +1,6 @@
 {
   "Name": "The Forest",
-  "TargetDirectory": "D:\\Servers\\TheForest\\TheForestDedicatedServer_Data\\Managed",
+  "TargetDirectory": "E:\\Servers\\TheForest\\TheForestDedicatedServer_Data\\Managed",
   "Manifests": [
     {
       "AssemblyName": "Assembly-CSharp.dll",
@@ -1403,8 +1403,8 @@
               }
             ],
             "HookTypeName": "Modify",
-            "Name": "ConfigFileInRoot [patch]",
-            "HookName": "ConfigFileInRoot",
+            "Name": "ConfigPathCurrentDirectory [patch]",
+            "HookName": "ConfigPathCurrentDirectory",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "SteamDSConfig",
             "Flagged": false,
@@ -1691,7 +1691,7 @@
               "Parameters": []
             },
             "MSILHash": "soDOrZpProiRr3EYWZ9Y8CnKvuczf5ZcyeuFcqG2Tbg=",
-            "BaseHookName": "ConfigFileInRoot [patch]",
+            "BaseHookName": "ConfigPathCurrentDirectory [patch]",
             "HookCategory": "_Patches"
           }
         },
@@ -1728,8 +1728,8 @@
               }
             ],
             "HookTypeName": "Modify",
-            "Name": "SavesInRoot [patch 1]",
-            "HookName": "SavesInRoot",
+            "Name": "SavePathCurrentDirectory [patch 1]",
+            "HookName": "SavePathCurrentDirectory ",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "TheForest.Utils.SaveSlotUtils",
             "Flagged": false,
@@ -1751,8 +1751,8 @@
             "RemoveCount": 4,
             "Instructions": [],
             "HookTypeName": "Modify",
-            "Name": "SavesInRoot [patch 2]",
-            "HookName": "SavesInRoot",
+            "Name": "SavePathCurrentDirectory [patch 2]",
+            "HookName": "SavePathCurrentDirectory ",
             "AssemblyName": "Assembly-CSharp.dll",
             "TypeName": "TheForest.Utils.SaveSlotUtils",
             "Flagged": false,
@@ -1763,7 +1763,7 @@
               "Parameters": []
             },
             "MSILHash": "+EQym5jingsDB+wAS5MVT4aH6JC0thXzdpDjb/+w/BM=",
-            "BaseHookName": "SavesInRoot [patch 1]",
+            "BaseHookName": "SavePathCurrentDirectory [patch 1]",
             "HookCategory": "_Patches"
           }
         },
