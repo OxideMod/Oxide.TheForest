@@ -1207,15 +1207,10 @@
           "Type": "Modify",
           "Hook": {
             "InjectionIndex": 0,
-            "RemoveCount": 0,
+            "RemoveCount": 17,
             "Instructions": [
               {
                 "OpCode": "ldc_i4_0",
-                "OpType": "None",
-                "Operand": null
-              },
-              {
-                "OpCode": "ret",
                 "OpType": "None",
                 "Operand": null
               }
@@ -1310,14 +1305,8 @@
           "Type": "Modify",
           "Hook": {
             "InjectionIndex": 0,
-            "RemoveCount": 0,
-            "Instructions": [
-              {
-                "OpCode": "ret",
-                "OpType": "None",
-                "Operand": null
-              }
-            ],
+            "RemoveCount": 47,
+            "Instructions": [],
             "HookTypeName": "Modify",
             "Name": "FixStartupInputNREs [patch]",
             "HookName": "FixStartupInputNREs",
@@ -1449,14 +1438,8 @@
           "Type": "Modify",
           "Hook": {
             "InjectionIndex": 0,
-            "RemoveCount": 0,
-            "Instructions": [
-              {
-                "OpCode": "ret",
-                "OpType": "None",
-                "Operand": null
-              }
-            ],
+            "RemoveCount": 1,
+            "Instructions": [],
             "HookTypeName": "Modify",
             "Name": "FixStartupMappingNREs [patch]",
             "HookName": "FixStartupMappingNREs",
@@ -1530,14 +1513,8 @@
           "Type": "Modify",
           "Hook": {
             "InjectionIndex": 0,
-            "RemoveCount": 0,
-            "Instructions": [
-              {
-                "OpCode": "ret",
-                "OpType": "None",
-                "Operand": null
-              }
-            ],
+            "RemoveCount": 107,
+            "Instructions": [],
             "HookTypeName": "Modify",
             "Name": "FixUICameraNREs [patch 2]",
             "HookName": "FixUICameraNREs",
