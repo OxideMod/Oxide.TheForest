@@ -1,6 +1,6 @@
 {
   "Name": "The Forest",
-  "TargetDirectory": "E:\\Servers\\TheForest\\TheForestDedicatedServer_Data\\Managed",
+  "TargetDirectory": "D:\\Servers\\TheForest\\TheForestDedicatedServer_Data\\Managed",
   "Manifests": [
     {
       "AssemblyName": "Assembly-CSharp.dll",
